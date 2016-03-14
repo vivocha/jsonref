@@ -1,0 +1,30 @@
+{
+  "name": "jsonref",
+  "version": "1.2.3",
+  "description": "Javascript References ($ref) and Pointers library",
+  "main": "lib/index.js",
+  "scripts": {
+    "prepublish": "babel --presets es2015 --source-maps -d lib src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vivocha/jsonref.git"
+  },
+  "keywords": [
+    "js",
+    "json",
+    "schema",
+    "reference",
+    "pointer"
+  ],
+  "devDependencies": {
+    "babel-cli": "^6.4.5",
+    "babel-core": "^6.4.0",
+    "babel-loader": "^6.2.1",
+    "babel-preset-es2015": "^6.3.13"
+  },
+  "author": "Federico Pinna <fpinna@vivocha.com>",
+  "license": "MIT",
+  "dependencies": {
+  }
+}
