@@ -1,6 +1,6 @@
 {
   "name": "jsonref",
-  "version": "1.2.3",
+  "version": "1.0.1",
   "description": "Javascript References ($ref) and Pointers library",
   "main": "lib/index.js",
   "scripts": {
