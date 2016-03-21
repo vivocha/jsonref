@@ -1,6 +1,6 @@
 # jsonref
 
-A simple Javascript library implementing [JSON Reference](http://tools.ietf.org/html/draft-pbryan-zyp-ref-03) and [JSON Pointer](http://tools.ietf.org/html/rfc6901) specifications.
+A simple Javascript library implementing the [JSON Reference](http://tools.ietf.org/html/draft-pbryan-zyp-ref-03) and the [JSON Pointer](http://tools.ietf.org/html/rfc6901) specifications.
 
 [![Build Status](https://travis-ci.org/vivocha/jsonref.svg?branch=master)](https://travis-ci.org/vivocha/jsonref)
 [![NPM version](https://badge.fury.io/js/jsonref.png)](http://badge.fury.io/js/jsonref)
