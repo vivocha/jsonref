@@ -2,6 +2,10 @@ import url from 'url';
 
 var __scope = Symbol();
 
+function isRef(obj) {
+  return typeof obj === 'object' && typeof obj.$ref === 'string' && Object.keys(obj).length === 1;
+}
+
 export function pointer(data, path) {
   var _data = data;
   var _path = typeof path === 'string' ? path.split('/') : path;
@@ -90,7 +94,7 @@ export function parse(dataOrUri, store, retriever) {
         data[__scope] = _scope;
         for (i in data) {
           o = data[i];
-          if (typeof o === 'object' && !o.$ref) {
+          if (typeof o === 'object' && !isRef(o)) {
             _parsePassOne(o, _scope + '/' + i);
           }
         }
@@ -122,7 +126,7 @@ export function parse(dataOrUri, store, retriever) {
         for (i in data) {
           o = data[i];
           if (typeof o === 'object') {
-            if (o.$ref) {
+            if (isRef(o)) {
               p = _deref(i, o.$ref);
             } else {
               p = _recurse(i, o);
