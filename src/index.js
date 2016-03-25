@@ -55,8 +55,12 @@ export function parse(dataOrUri, store, retriever) {
       var uri = _resolve(path, scope);
       var data;
       for (var i = uri.hash.length, k ; !data && i > 0 ; i--) {
-        k = uri.url + uri.hash.slice(0, i).join('/');
-        data = _store[k];
+        k = uri.url + uri.hash.slice(0, i).join('/')
+        if (k === '#') {
+          data = _root;
+        } else {
+          data = _store[k];
+        }
       }
       if (data) {
         return Promise.resolve(pointer(data, uri.hash.slice(i)));
@@ -120,7 +124,7 @@ export function parse(dataOrUri, store, retriever) {
         }
         function _recurse(key, obj) {
           return p.then(function() {
-            return _parsePassTwo(obj, _scope + '/' + i);
+            return _parsePassTwo(obj, _scope + '/' + key);
           });
         }
         for (i in data) {
