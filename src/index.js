@@ -21,9 +21,10 @@ export function pointer(data, path) {
 export function scope(data) {
   return typeof data === 'object' ? data[__scope] : undefined;
 }
-export function parse(dataOrUri, store, retriever) {
-  var _store = store || {};
-  var _retriever = retriever || function () {
+export function parse(dataOrUri, opts) {
+  var _opts = opts || {};
+  var _store = _opts.store || {};
+  var _retriever = _opts.retriever || function () {
       return Promise.reject(new Error('no_retriever'));
     };
   var _root;
@@ -74,18 +75,7 @@ export function parse(dataOrUri, store, retriever) {
       }
     }
   }
-  function _getSync(path, scope) {
-    var uri = _resolve(path, scope);
-    var data;
-    for (var i = uri.hash.length ; i > 0 ; i--) {
-      data = _store[uri.url + url.hash.slice(0, i).join('/')];
-      if (data) {
-        return pointer(data, uri.hash.slice(i));
-      }
-    }
-    return undefined;
-  }
-  function _parse(path, scope, data) {
+  function _parse(data, scope) {
     _root = data;
     function _parsePassOne(data, scope) {
       if (typeof data === 'object') {
@@ -140,15 +130,15 @@ export function parse(dataOrUri, store, retriever) {
       }
       return p;
     }
-    _parsePassOne(data);
-    return _parsePassTwo(data).then(function() {
+    _parsePassOne(data, scope);
+    return _parsePassTwo(data, scope).then(function() {
       return data;
     });
   }
 
   if (typeof dataOrUri === 'string') {
-    return _get(dataOrUri);
+    return _get(dataOrUri, _opts.scope);
   } else {
-    return _parse(null, null, dataOrUri);
+    return _parse(dataOrUri, _opts.scope);
   }
 }
