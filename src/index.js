@@ -43,9 +43,12 @@ export function parse(dataOrUri, opts) {
     }
     return out;
   }
-  function _register(path, scope, data) {
+  function _normalize(path, scope) {
     var uri = _resolve(path, scope);
-    var resolved = uri.url + uri.hash.join('/');
+    return uri.url + uri.hash.join('/');
+  }
+  function _register(path, scope, data) {
+    var resolved = _normalize(path, scope);
     _store[resolved] = data;
     return resolved;
   }
@@ -77,6 +80,10 @@ export function parse(dataOrUri, opts) {
   }
   function _parse(data, scope) {
     _root = data;
+    if (scope) {
+      scope = _normalize(null, scope);
+      _register(null, scope, data);
+    }
     function _parsePassOne(data, scope) {
       if (typeof data === 'object') {
         var _scope, i, o;
@@ -99,8 +106,7 @@ export function parse(dataOrUri, opts) {
       if (typeof data === 'object') {
         var _scope, i, o;
         if (typeof data.id === 'string') {
-          var uri = _resolve(data.id, scope);
-          _scope = uri.url + uri.hash.join('/');
+          _scope = _normalize(data.id, scope);
         } else {
           _scope = scope || '#';
         }
