@@ -141,7 +141,7 @@ var schema = {
   ]
 }
 
-jsonref.parse(schema, null, {
+jsonref.parse(schema, {
   retriever: retriever
 }).then(function(result) {
   console.log(JSON.stringify(result, null, 2));
@@ -172,7 +172,7 @@ var schema = {
   }
 }
 
-jsonref.parse(schema, null, {
+jsonref.parse(schema, {
   store: store
 }).then(function(result) {
   console.log(JSON.stringify(result, null, 2));
