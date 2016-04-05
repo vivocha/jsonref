@@ -52,14 +52,14 @@ export function parse(dataOrUri, opts) {
     _store[resolved] = data;
     return resolved;
   }
-  function _get(path, scope) {
+  function _getPointer(path, scope) {
     if (path === '#' && !scope) {
       return _root;
     } else {
       var uri = _resolve(path, scope);
       var data;
       for (var i = uri.hash.length, k ; !data && i > 0 ; i--) {
-        k = uri.url + uri.hash.slice(0, i).join('/')
+        k = uri.url + uri.hash.slice(0, i).join('/');
         if (k === '#') {
           data = _root;
         } else {
@@ -67,16 +67,21 @@ export function parse(dataOrUri, opts) {
         }
       }
       if (data) {
-        return Promise.resolve(pointer(data, uri.hash.slice(i)));
+        return Promise.resolve({ data: data, path: uri.hash.slice(i) });
       } else {
         return _retriever(uri.url).then(function(data) {
           _register(uri.url, '', data);
           return _parse(data, uri.url).then(function(data) {
-            return pointer(data, uri.hash);
+            return { data: data, path: uri.hash };
           });
         });
       }
     }
+  }
+  function _get(path, scope) {
+    return _getPointer(path, scope).then(function(res) {
+      return pointer(res.data, res.path);
+    });
   }
   function _parse(data, scope) {
     _root = data;
@@ -112,8 +117,17 @@ export function parse(dataOrUri, opts) {
         }
         function _deref(key, ref) {
           return p.then(function() {
-            return _get(ref, _scope).then(function(derefData) {
-              data[key] = derefData;
+            return _getPointer(ref, _scope).then(function(derefPointer) {
+              Object.defineProperty(data, key, {
+                get: function() {
+                  return pointer(derefPointer.data, derefPointer.path);
+                },
+                set: function(v) {
+                  return pointer(derefPointer.data, derefPointer.path);
+                },
+                enumerable: true,
+                configurable: true
+              });
               return true;
             });
           });
