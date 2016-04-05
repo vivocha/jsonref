@@ -80,7 +80,9 @@ Returns the data requested
 ### Parsing an object with no external references
 
 ````javascript
-parse({
+var jsonref = require('jsonref');
+
+var schema = {
   "id": "http://my.site/myschema#",
   "definitions": {
     "schema1": {
@@ -92,8 +94,10 @@ parse({
       "items": { "$ref": "schema1" }
     }
   }
-}).then(function(data) {
-  console.log(JSON.stringify(data, null, 2));
+}
+
+jsonref.parse(schema).then(function(result) {
+  console.log(JSON.stringify(result, null, 2));
 });
 ````
 
@@ -121,7 +125,9 @@ The output is:
 ### Parsing an object with external references
 
 ```javascript
-parse({
+var jsonref = require('jsonref');
+
+var schema = {
   "allOf": [
     { "$ref": "http://json-schema.org/draft-04/schema#" },
     {
@@ -133,10 +139,12 @@ parse({
       }
     }
   ]
-}, null, {
+}
+
+jsonref.parse(schema, null, {
   retriever: retriever
-}).then(function(data) {
-  console.log(JSON.stringify(data, null, 2));
+}).then(function(result) {
+  console.log(JSON.stringify(result, null, 2));
 });
 ```
 
@@ -147,9 +155,10 @@ exception.
 ### Parsing an object using a custom store
 
 ```javascript
-var store = {};
+var jsonref = require('jsonref');
 
-parse({
+var store = {};
+var schema = {
   "id": "http://my.site/myschema#",
   "definitions": {
     "schema1": {
@@ -161,10 +170,12 @@ parse({
       "items": { "$ref": "schema1" }
     }
   }
-}, null, {
+}
+
+jsonref.parse(schema, null, {
   store: store
-}).then(function(data) {
-  console.log(JSON.stringify(store, null, 2));
+}).then(function(result) {
+  console.log(JSON.stringify(result, null, 2));
 });
 ```
 
