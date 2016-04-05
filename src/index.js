@@ -69,9 +69,9 @@ export function parse(dataOrUri, opts) {
       if (data) {
         return Promise.resolve(pointer(data, uri.hash.slice(i)));
       } else {
-        return _retriever(uri.url).then(function (data) {
+        return _retriever(uri.url).then(function(data) {
           _register(uri.url, '', data);
-          return _parse(uri.url, '', data).then(function (data) {
+          return _parse(data, uri.url).then(function(data) {
             return pointer(data, uri.hash);
           });
         });
