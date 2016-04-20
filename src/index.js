@@ -109,12 +109,7 @@ export function parse(dataOrUri, opts) {
     function _parsePassTwo(data, scope) {
       var p = Promise.resolve(true);
       if (typeof data === 'object') {
-        var _scope, i, o;
-        if (typeof data.id === 'string') {
-          _scope = _normalize(data.id, scope);
-        } else {
-          _scope = scope || '#';
-        }
+        var _scope = data[__scope] || scope;
         function _deref(key, ref) {
           return p.then(function() {
             return _getPointer(ref, _scope).then(function(derefPointer) {
@@ -137,6 +132,7 @@ export function parse(dataOrUri, opts) {
             return _parsePassTwo(obj, _scope + '/' + key);
           });
         }
+        var i, o;
         for (i in data) {
           o = data[i];
           if (typeof o === 'object') {
