@@ -6,15 +6,59 @@ function isRef(obj) {
   return typeof obj === 'object' && typeof obj.$ref === 'string' && Object.keys(obj).length === 1;
 }
 
-export function pointer(data, path) {
+export function resolveUri(path, scope) {
+  var resolvedPath = url.resolve(scope || '', path || '');
+  var parsedPath = url.parse(resolvedPath);
+  var hash = parsedPath.hash;
+  delete parsedPath.hash;
+  var out = {
+    url: url.format(parsedPath)
+  };
+  if (hash) {
+    out.hash = hash.split('/');
+  } else {
+    out.hash = ['#'];
+  }
+  return out;
+}
+export function normalizeUri(path, scope, omitEmptyFragment) {
+  var uri = resolveUri(path, scope);
+  var hash = uri.hash.join('/')
+  return uri.url + (!omitEmptyFragment || hash !== '#' ? hash : '');
+}
+export function pointer(data, path, value) {
+  if (arguments.length < 2) {
+    return undefined;
+  }
   var _data = data;
   var _path = typeof path === 'string' ? path.split('/') : path;
-  for (var i = 0 ; _path && i < _path.length ; i++) {
-    if (_path[i] === '#' && i === 0) {
-      _data = data;
-    } else {
-      _data = _data[_path[i]];
+  if (arguments.length > 2) {
+    for (var i = 0, max = _path.length - 1, p = null ; p = _path[i], i < max; i++) {
+      if ((p === '#' || p === '') && i === 0) {
+        continue;
+      } else {
+        if (typeof _data[p] !== 'object') {
+          _data[p] = (parseInt(_path[i + 1]) || _path[i + 1] == 0) ? [] : {};
+        }
+        _data = _data[p];
+      }
     }
+    if (typeof value !== 'undefined') {
+      _data[p] = value;
+      _data = _data[p];
+    } else {
+      delete _data[p];
+      _data = undefined;
+    }
+  } else {
+    for (var i = 0, _data = data ; _data && _path && i < _path.length ; i++) {
+      if ((_path[i] === '#' || _path[i] === '') && i === 0) {
+        continue;
+      } else {
+        _data = _data[_path[i]];
+      }
+    }
+    return _data;
   }
   return _data;
 }
@@ -28,27 +72,8 @@ export function parse(dataOrUri, opts) {
       return Promise.reject(new Error('no_retriever'));
     };
   var _root;
-  function _resolve(path, scope) {
-    var resolvedPath = url.resolve(scope || '', path || '');
-    var parsedPath = url.parse(resolvedPath);
-    var hash = parsedPath.hash;
-    delete parsedPath.hash;
-    var out = {
-      url: url.format(parsedPath)
-    };
-    if (hash) {
-      out.hash = hash.split('/');
-    } else {
-      out.hash = ['#'];
-    }
-    return out;
-  }
-  function _normalize(path, scope) {
-    var uri = _resolve(path, scope);
-    return uri.url + uri.hash.join('/');
-  }
   function _register(path, scope, data) {
-    var resolved = _normalize(path, scope);
+    var resolved = normalizeUri(path, scope);
     _store[resolved] = data;
     return resolved;
   }
@@ -56,7 +81,7 @@ export function parse(dataOrUri, opts) {
     if (path === '#' && !scope) {
       return _root;
     } else {
-      var uri = _resolve(path, scope);
+      var uri = resolveUri(path, scope);
       var data;
       for (var i = uri.hash.length, k ; !data && i > 0 ; i--) {
         k = uri.url + uri.hash.slice(0, i).join('/');
@@ -86,7 +111,7 @@ export function parse(dataOrUri, opts) {
   function _parse(data, scope) {
     _root = data;
     if (scope) {
-      scope = _normalize(null, scope);
+      scope = normalizeUri(null, scope);
       _register(null, scope, data);
     }
     function _parsePassOne(data, scope) {
@@ -157,4 +182,28 @@ export function parse(dataOrUri, opts) {
   } else {
     return _parse(dataOrUri, _opts.scope);
   }
+}
+export function normalize(data, scope) {
+  if (scope) {
+    scope = normalizeUri(null, scope);
+  }
+  if (typeof data === 'object') {
+    var _scope, i, o;
+    if (typeof data.id === 'string') {
+      _scope = normalizeUri(data.id, scope);
+    } else {
+      _scope = scope || '#';
+    }
+    for (i in data) {
+      o = data[i];
+      if (typeof o === 'object') {
+        if (isRef(o)) {
+          o.$ref = normalizeUri(o.$ref, _scope, true);
+        } else {
+          normalize(o, _scope + '/' + i);
+        }
+      }
+    }
+  }
+  return data;
 }
