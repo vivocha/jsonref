@@ -67,13 +67,14 @@ function retriever(url) {
 }
 ```
 
-## pointer(data, path)
+## pointer(data, path _[, value]_)
 
 * `data`, the object to transverse using JSON Pointer.
 * `path`, either a string (`#/prop1/prop2`) or an array of path components (`[ "#", "prop1", "prop2" ]`
 or `[ "prop1", "prop2" ]`).
+* `value`, optional, value to set at `path`. All missing intermediate path levels are created as well.
 
-Returns the data requested
+Returns the data requested or sets a new value at the specified path
 
 ## Examples
 

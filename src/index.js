@@ -26,15 +26,39 @@ export function normalizeUri(path, scope, omitEmptyFragment) {
   var hash = uri.hash.join('/')
   return uri.url + (!omitEmptyFragment || hash !== '#' ? hash : '');
 }
-export function pointer(data, path) {
+export function pointer(data, path, value) {
+  if (arguments.length < 2) {
+    return undefined;
+  }
   var _data = data;
   var _path = typeof path === 'string' ? path.split('/') : path;
-  for (var i = 0 ; _path && i < _path.length ; i++) {
-    if (_path[i] === '#' && i === 0) {
-      _data = data;
-    } else {
-      _data = _data[_path[i]];
+  if (arguments.length > 2) {
+    for (var i = 0, max = _path.length - 1, p = null ; p = _path[i], i < max; i++) {
+      if ((p === '#' || p === '') && i === 0) {
+        continue;
+      } else {
+        if (typeof _data[p] !== 'object') {
+          _data[p] = (parseInt(_path[i + 1]) || _path[i + 1] == 0) ? [] : {};
+        }
+        _data = _data[p];
+      }
     }
+    if (typeof value !== 'undefined') {
+      _data[p] = value;
+      _data = _data[p];
+    } else {
+      delete _data[p];
+      _data = undefined;
+    }
+  } else {
+    for (var i = 0, _data = data ; _data && _path && i < _path.length ; i++) {
+      if ((_path[i] === '#' || _path[i] === '') && i === 0) {
+        continue;
+      } else {
+        _data = _data[_path[i]];
+      }
+    }
+    return _data;
   }
   return _data;
 }
