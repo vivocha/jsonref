@@ -2,11 +2,9 @@
 
 A simple Javascript library implementing the [JSON Reference](http://tools.ietf.org/html/draft-pbryan-zyp-ref-03) and the [JSON Pointer](http://tools.ietf.org/html/rfc6901) specifications.
 
-[![Build Status](https://travis-ci.org/vivocha/jsonref.svg?branch=master)](https://travis-ci.org/vivocha/jsonref)
-[![NPM version](https://badge.fury.io/js/jsonref.png)](http://badge.fury.io/js/jsonref)
-
-[![Dependency Status](https://david-dm.org/vivocha/jsonref/status.svg)](https://david-dm.org/vivocha/jsonref)
-[![devDependency Status](https://david-dm.org/vivocha/jsonref/dev-status.svg)](https://david-dm.org/vivocha/jsonref#info=devDependencies)
+[![travis build](https://img.shields.io/travis/vivocha/jsonref.svg)](https://travis-ci.org/vivocha/jsonref)
+[![codecov coverage](https://img.shields.io/codecov/c/github/vivocha/jsonref.svg)](https://codecov.io/gh/vivocha/jsonref)
+[![npm version](https://img.shields.io/npm/v/jsonref.svg)](https://www.npmjs.com/package/jsonref)
 
 ## Install
 
