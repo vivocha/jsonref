@@ -2,7 +2,7 @@
   "name": "jsonref",
   "version": "0.0.0-semantically-released",
   "description": "Javascript References ($ref) and Pointers library",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "postinstall": "typings install",
     "prebuild": "rimraf dist",
