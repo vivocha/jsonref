@@ -311,6 +311,16 @@ describe('jsonref', function() {
         retriever: retriever
       }).should.eventually.equal(100);
     });
+    it('should be able to parse the same data more than once', function() {
+      return jsonref.parse({
+        a: 10,
+        b: {
+          $ref: '#/a'
+        }
+      }).then(function(data) {
+        return jsonref.parse(data).should.eventually.equal(data);
+      });
+    });
     it('should fail is no retriever is passed and an external url is needed', function() {
       return jsonref.parse({
         a: 10,
