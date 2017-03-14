@@ -1,6 +1,6 @@
 import * as url from 'url';
 
-var __scope = Symbol();
+const __scope = Symbol();
 
 function isRef(obj: any): boolean {
   return typeof obj === 'object' && typeof obj.$ref === 'string' && Object.keys(obj).length === 1;
@@ -20,9 +20,9 @@ export interface ParseOptions {
 }
 
 export function resolveUri(path: string, scope?: string): ResolvedUri {
-  var resolvedPath = url.resolve(scope || '', path || '');
-  var parsedPath = url.parse(resolvedPath);
-  var hash = parsedPath.hash || '';
+  let resolvedPath = url.resolve(scope || '', path || '');
+  let parsedPath = url.parse(resolvedPath);
+  let hash = parsedPath.hash || '';
   delete parsedPath.hash;
   if (hash) {
     hash = hash.substr(1);
@@ -35,8 +35,8 @@ export function resolveUri(path: string, scope?: string): ResolvedUri {
 }
 
 export function normalizeUri(path: string, scope?: string, omitEmptyFragment: boolean = false): string {
-  var uri: ResolvedUri = resolveUri(path, scope);
-  var hash = uri.hash.join('/');
+  let uri: ResolvedUri = resolveUri(path, scope);
+  let hash = uri.hash.join('/');
   return uri.url + (!omitEmptyFragment || hash !== '#' ? hash : '');
 }
 
@@ -44,12 +44,13 @@ export function pointer(data: any, path: string|string[], value?: any): any {
   if (arguments.length < 2) {
     return undefined;
   }
-  var _data = data;
-  var _path = typeof path === 'string' ? (path === '/' ? [] : path.split('/')) : path;
+  let _data = data;
+  let _path = typeof path === 'string' ? (path === '/' ? [] : path.split('/')) : path;
   if (arguments.length > 2) {
-    for (var i = 0, max = _path.length - 1, p = null; p = _path[i], i < max; i++) {
+    let p;
+    for (let i = 0, max = _path.length - 1 ; p = _path[i], i < max ; i++) {
       if ((p === '#' || p === '') && i === 0) {
-        continue;
+        // noop
       } else {
         if (typeof _data[p] !== 'object') {
           _data[p] = (parseInt(_path[i + 1]) || _path[i + 1] === '0') ? [] : {};
@@ -65,9 +66,9 @@ export function pointer(data: any, path: string|string[], value?: any): any {
       _data = undefined;
     }
   } else {
-    for (var i = 0, _data = data; typeof _data !== 'undefined' && _path && i < _path.length; i++) {
+    for (let i = 0 ; typeof _data !== 'undefined' && _path && i < _path.length ; i++) {
       if ((_path[i] === '#' || _path[i] === '') && i === 0) {
-        continue;
+        // noop
       } else {
         _data = _data[_path[i]];
       }
@@ -81,23 +82,23 @@ export function scope(data: any): string {
 }
 
 export function parse(dataOrUri: any, opts: ParseOptions = {}): Promise<any> {
-  var _opts = opts;
-  var _store = _opts.store || {};
-  var _retriever = _opts.retriever || function (url) {
+  let _opts = opts;
+  let _store = _opts.store || {};
+  let _retriever = _opts.retriever || function (url) {
       return Promise.reject(new Error('no_retriever'));
     };
-  var _root;
+  let _root;
 
   function _register(path: string, scope: string, data: any): string {
-    var resolved = normalizeUri(path, scope);
+    let resolved = normalizeUri(path, scope);
     _store[resolved] = data;
     return resolved;
   }
 
   function _getPointer(path: string, scope: string): Promise<{ data: any, path: string[] }> {
-    var uri = resolveUri(path, scope);
-    var data;
-    for (var i = uri.hash.length, k; !data && i > 0; i--) {
+    let uri = resolveUri(path, scope);
+    let data, i, k;
+    for (i = uri.hash.length ; !data && i > 0; i--) {
       k = uri.url + uri.hash.slice(0, i).join('/');
       if (k === '#') {
         data = _root;
@@ -130,7 +131,7 @@ export function parse(dataOrUri: any, opts: ParseOptions = {}): Promise<any> {
       _register(null, scope, data);
     }
     function _parsePassOne(data: any, scope: string): void {
-      var _scope, i, o;
+      let _scope, i, o;
       if (typeof data.id === 'string') {
         _scope = _register(data.id, scope, data);
       } else {
@@ -146,8 +147,8 @@ export function parse(dataOrUri: any, opts: ParseOptions = {}): Promise<any> {
     }
 
     function _parsePassTwo(data: any): Promise<any> {
-      var p = Promise.resolve(true);
-      var _scope = data[__scope];
+      let p = Promise.resolve(true);
+      let _scope = data[__scope];
 
       function _deref(key, ref) {
         return p.then(function () {
@@ -173,7 +174,7 @@ export function parse(dataOrUri: any, opts: ParseOptions = {}): Promise<any> {
         });
       }
 
-      var i, o;
+      let i, o;
       for (i in data) {
         o = data[i];
         if (typeof o === 'object') {
@@ -213,7 +214,7 @@ export function normalize(data: any, scope: string): any {
     scope = normalizeUri(null, scope);
   }
   if (typeof data === 'object') {
-    var _scope, i, o;
+    let _scope, i, o;
     if (typeof data.id === 'string') {
       _scope = normalizeUri(data.id, scope);
     } else {
