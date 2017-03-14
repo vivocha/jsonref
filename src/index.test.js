@@ -1,4 +1,4 @@
-var chai = require('chai')
+const chai = require('chai')
   , spies = require('chai-spies')
   , chaiAsPromised = require('chai-as-promised')
   , should = chai.should()
@@ -78,7 +78,7 @@ describe('jsonref', function() {
 
     describe('read', function() {
 
-      var data;
+      let data;
 
       beforeEach(function() {
         data = {
@@ -109,7 +109,7 @@ describe('jsonref', function() {
         should.not.exist(jsonref.pointer(data));
       });
       it('should return data if called with a bad path', function() {
-        var d = jsonref.pointer(data, { x: 'a' });
+        let d = jsonref.pointer(data, { x: 'a' });
         should.exist(d);
         d.should.equal(data);
       });
@@ -156,7 +156,7 @@ describe('jsonref', function() {
 
     describe('write', function() {
 
-      var data;
+      let data;
 
       beforeEach(function() {
         data = {
@@ -300,7 +300,7 @@ describe('jsonref', function() {
       return jsonref.parse(1).should.be.rejectedWith(Error, /bad_data/);
     });
     it('should be able to parse a root level $ref', function() {
-      var retriever = chai.spy(function() {
+      let retriever = chai.spy(function() {
         return Promise.resolve({
           a: 100
         });
@@ -338,7 +338,7 @@ describe('jsonref', function() {
       }, { scope: 'http://example.com/test' }).should.eventually.be.a('object').and.have.a.property('b').equal(10);
     });
     it('should call the retriever if the requested scope does not match the specified one', function() {
-      var retriever = chai.spy(function() {
+      let retriever = chai.spy(function() {
         return Promise.resolve({
           a: 100
         });
@@ -357,7 +357,7 @@ describe('jsonref', function() {
       }).should.eventually.be.a('object').and.have.a.property('b').equal(100);
     });
     it('should call the retriever if data is a string', function() {
-      var retriever = chai.spy(function() {
+      let retriever = chai.spy(function() {
         return Promise.resolve({
           a: 200
         });
@@ -367,7 +367,7 @@ describe('jsonref', function() {
       }).should.eventually.be.a('object').and.have.a.property('a').equal(200);
     });
     it('should turn refs into references to the original properties', function() {
-      var data = {
+      let data = {
         a: {
           b: 10
         },
@@ -388,7 +388,7 @@ describe('jsonref', function() {
       });
     });
     it('should allow changing the value of deref\'d properties', function() {
-      var data = {
+      let data = {
         a: {
           b: 10
         },
@@ -540,4 +540,93 @@ describe('jsonref', function() {
     });
 
   });
+
+  describe('store', function() {
+
+    it('should not register an anonymous object when no scope is set', function() {
+      let spy = chai.spy((url) => {
+        return Promise.resolve({ a: true, b: 1, c: 'test' });
+      });
+      let opts = {
+        scope: '',
+        store: [],
+        retriever: spy
+      };
+      return jsonref.parse({
+        x: { $ref: 'test/aaa' }
+      }, opts).then(data => {
+        data.x.a.should.equal(true);
+        let k = Object.keys(opts.store);
+        k.should.have.length(1);
+        k[0].should.equal('test/aaa#');
+      });
+
+    })
+
+    it('should register an object when no scope is set', function() {
+      let spy = chai.spy((url) => {
+        return Promise.resolve({ a: true, b: 1, c: 'test' });
+      });
+      let opts = {
+        scope: '',
+        store: [],
+        retriever: spy
+      };
+      return Promise.all([
+        jsonref.parse({
+          id: 'test/aaa',
+          x: { $ref: 'http://example.com/test/xyz' }
+        }, opts),
+        jsonref.parse({
+          id: 'test/bbb',
+          x: { $ref: 'http://example.com/test/xyz#/c' },
+          y: { $ref: '#/x' }
+        }, opts)
+      ]).then(data => {
+        data[0].x.a.should.equal(true);
+        data[1].x.should.equal('test');
+        data[1].y.should.equal('test');
+        let k = Object.keys(opts.store);
+        k.should.have.length(3);
+      });
+    });
+
+    it('should not register an anonymous object when no scope is set, after registering other objects', function() {
+      let spy = chai.spy((url) => {
+        return Promise.resolve({ a: true, b: 1, c: 'test' });
+      });
+      let opts = {
+        scope: '',
+        store: [],
+        retriever: spy
+      };
+      return Promise.all([
+        jsonref.parse({
+          id: 'test/aaa',
+          x: { $ref: 'http://example.com/test/xyz' }
+        }, opts),
+        jsonref.parse({
+          id: 'test/bbb',
+          x: { $ref: 'http://example.com/test/xyz#/c' },
+          y: { $ref: '#/x' }
+        }, opts)
+      ]).then(() => {
+        return jsonref.parse({
+          a: {
+            b: { $ref: 'test/aaa#'}
+          },
+          c: {
+            d: { $ref: 'test/bbb#/x' }
+          }
+        }, opts).then(data => {
+          data.a.b.x.a.should.equal(true);
+          data.c.d.should.equal('test');
+          let k = Object.keys(opts.store);
+          k.should.have.length(3);
+        });
+      });
+    });
+
+
+  })
 });
