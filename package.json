@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "clean": "rimraf dist coverage .nyc_output",
+    "clean": "rimraf dist coverage .nyc_output node_modules",
     "prebuild": "rimraf dist",
     "build": "tsc",
     "precommit": "npm run build && npm run cover && npm run check-coverage",
