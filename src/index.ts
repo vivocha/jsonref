@@ -150,6 +150,24 @@ export function parse(dataOrUri: any, opts: ParseOptions = {}): Promise<any> {
       let p = Promise.resolve(true);
       let _scope = data[__scope];
 
+      function _addToJSON() {
+        let originalJSON = JSON.parse(JSON.stringify(data));
+        Object.defineProperty(data, 'toJSON', {
+          get: () => () => originalJSON,
+          set: v => {
+            Object.defineProperty(data, 'toJSON', {
+              value: v,
+              configurable: true,
+              enumerable: true,
+              writable: true
+            });
+            return v;
+          },
+          enumerable: false,
+          configurable: true
+        });
+      }
+
       function _deref(key, ref) {
         return p.then(function () {
           return _getPointer(ref, _scope).then(function (derefPointer) {
@@ -179,6 +197,9 @@ export function parse(dataOrUri: any, opts: ParseOptions = {}): Promise<any> {
         o = data[i];
         if (typeof o === 'object') {
           if (isRef(o)) {
+            if (!data.toJSON) {
+              _addToJSON();
+            }
             p = _deref(i, o.$ref);
           } else {
             p = _recurse(i, o);
@@ -193,6 +214,15 @@ export function parse(dataOrUri: any, opts: ParseOptions = {}): Promise<any> {
       return data;
     });
   }
+
+
+  var x = {
+    b: {
+      $ref:'#/c'
+    },
+    c: 5
+  };
+
 
   if (typeof dataOrUri === 'string') {
     return _get(dataOrUri, _opts.scope);

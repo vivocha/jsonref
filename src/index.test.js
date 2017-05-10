@@ -407,6 +407,29 @@ describe('jsonref', function() {
         data.a.b.should.equal(5);
       });
     });
+    it('should render as JSON as the original object', function() {
+      let data = {
+        a: {
+          b: 10
+        },
+        c: {
+          $ref: '#/a'
+        },
+        d: {
+          $ref: '#/a/b'
+        },
+        e: {
+          $ref: '#'
+        }
+      };
+      let origJSON = JSON.stringify(data);
+      return jsonref.parse(data).then(function(data) {
+        data.e.a.b.should.equal(10);
+        JSON.stringify(data).should.equal(origJSON);
+        data.toJSON = () => { return {} };
+        JSON.stringify(data).should.equal('{}');
+      });
+    });
 
   });
 

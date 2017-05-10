@@ -40,19 +40,19 @@
   },
   "homepage": "https://github.com/vivocha/jsonref#readme",
   "devDependencies": {
-    "@types/node": "7.0.13",
+    "@types/node": "7.0.18",
     "chai": "3.5.0",
     "chai-as-promised": "6.0.0",
     "chai-spies": "0.7.1",
     "commitizen": "2.9.6",
-    "coveralls": "2.13.0",
+    "coveralls": "2.13.1",
     "cz-conventional-changelog": "2.0.0",
     "husky": "0.13.3",
-    "mocha": "3.2.0",
-    "nyc": "10.2.0",
+    "mocha": "3.3.0",
+    "nyc": "10.3.2",
     "rimraf": "2.6.1",
-    "semantic-release": "^6.3.2",
-    "typescript": "2.2.2"
+    "semantic-release": "^6.3.6",
+    "typescript": "2.3.2"
   },
   "config": {
     "commitizen": {
