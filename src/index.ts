@@ -215,15 +215,6 @@ export function parse(dataOrUri: any, opts: ParseOptions = {}): Promise<any> {
     });
   }
 
-
-  var x = {
-    b: {
-      $ref:'#/c'
-    },
-    c: 5
-  };
-
-
   if (typeof dataOrUri === 'string') {
     return _get(dataOrUri, _opts.scope);
   } else if (typeof dataOrUri === 'object') {
