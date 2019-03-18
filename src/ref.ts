@@ -32,8 +32,9 @@ export function resolve(obj: any, options: meta.Options): any {
     if (meta.isRef(obj)) {
       return deref(obj);
     } else {
+      const orig = Object.assign({}, obj);
       Object.defineProperty(obj, 'toJSON', {
-        value: () => obj,
+        get: () => () => orig,
         enumerable: false,
         configurable: false
       });

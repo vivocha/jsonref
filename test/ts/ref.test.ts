@@ -46,13 +46,13 @@ describe('ref', function() {
           $ref: 'other#/f'
         }
       }, { scope: 'http://example.com' });
-      data.a.b.should.equal(data);
-      data.a.c.should.equal(data);
-      data.a.d.should.equal(data.e);
-      data.e.f.g.should.equal(data.a);
-      data.h.should.equal(data.e.f);
+      data.a.b.a.should.equal(data.a);
+      data.a.c.a.should.equal(data.a);
+      data.a.d.f.should.equal(data.e.f);
+      data.e.f.g.b.a.should.equal(data.a);
+      data.h.g.b.a.should.equal(data.e.f.g.b.a);
     });
-    it.skip('should be serialized with the original $refs intact', function() {
+    it('should be serialized with the original $refs intact', function() {
       const data = ref.resolve({
         a: {
           b: {

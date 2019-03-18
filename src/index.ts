@@ -27,11 +27,11 @@ export async function parse(dataOrUri: any, opts: ParseOptions): Promise<any> {
     }
     const uri = (new URL(dataOrUri)).toString();
     obj = await opts.retriever(uri);
+    if (!opts.registry) {
+      opts.registry = {};
+    }
     if (uri !== opts.scope) {
-      if (!opts.registry) {
-        opts.registry = {};
-      }
-      opts.registry[uri] = obj;
+      opts.registry[meta.normalizeUri(uri)] = obj;
     }
   } else if (dataOrUri === null || typeof dataOrUri !== 'object') {
     throw new TypeError('Bad data');
@@ -49,7 +49,7 @@ export async function parse(dataOrUri: any, opts: ParseOptions): Promise<any> {
   
       if (missingRefs.length) {
         if (!opts.retriever) {
-          throw new Error('no_retriever');
+          throw new Error('No retriever');
         }
         const registry = meta.getMeta(obj).registry;
         for (let r of missingRefs) {
