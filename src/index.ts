@@ -1,6 +1,6 @@
 import * as meta from './meta';
 import { resolve as refResolver } from './ref';
-export { normalize, normalizeUri } from './meta';
+export { getMeta, isAnnotated, isRef, Meta, normalize, normalizeUri } from './meta';
 export { resolve as pointer } from './pointer';
 
 export type Retriever = (url: string)=>Promise<any>;
