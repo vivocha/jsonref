@@ -1,8 +1,7 @@
 import * as meta from './meta';
+import { unescape } from './utils';
 
 const PREFIX_RE: RegExp = /^(0|[1-9][0-9]*?)([#]?)$/;
-const TILDE_0_RE: RegExp = /~0/g;
-const TILDE_1_RE: RegExp = /~1/g;
 const INDEX_RE: RegExp = /-|0|[1-9][0-9]*/;
 
 export function getPointer(obj: any): string {
@@ -56,7 +55,7 @@ export function resolve(obj: any, path: string): any {
     if (current === null || typeof current !== 'object') {
       throw new TypeError(`Invalid type at path`);
     }
-    const part = (parts.shift() as string).replace(TILDE_1_RE, '/').replace(TILDE_0_RE, '~');
+    const part = unescape((parts.shift() as string));
     if (Array.isArray(current)) {
       if (!part.match(INDEX_RE)) {
         throw new SyntaxError(`Invalid array index "${part}"`);

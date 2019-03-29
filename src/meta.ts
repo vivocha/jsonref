@@ -1,4 +1,5 @@
 import { URL } from "url";
+import { escape } from './utils';
 
 export interface Registry {
   [uri: string]: any
@@ -109,7 +110,7 @@ export function annotate(obj: any, options: Options): any {
             parent: obj,
             root: meta.root
           }
-          _annotate(next, `${meta.scope}/${key}`);
+          _annotate(next, `${meta.scope}/${escape(key)}`);
         }
       }
     }
