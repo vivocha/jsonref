@@ -71,18 +71,32 @@ describe('jsonref', function() {
         retriever
       }).should.eventually.equal(100);
     });
-    it('should be able to parse the same data more than once', function() {
+    it('should be able to parse the same data more than once', async function() {
       const opts = {
         scope: 'http://example.com'
       };
-      return jsonref.parse({
+      const data = {
         a: 10,
         b: {
           $ref: '#/a'
+        },
+        c: {
+          d: {
+            e: true,
+            f: {
+              $ref: '#/c/d/e'
+            }
+          }
         }
-      }, opts).then(function(data) {
-        return jsonref.parse(data, opts).should.eventually.equal(data);
-      });
+      };
+      const outerData = {
+        data,
+        ref: { $ref: '#/data/a' }
+      };
+      debugger;
+      await jsonref.parse(data, opts);
+      await jsonref.parse(outerData, opts).should.eventually.equal(outerData);
+      return jsonref.parse(outerData, opts).should.eventually.equal(outerData);
     });
     it('should not call the retriever if the requested scope matches the specified one', function() {
       return jsonref.parse({
@@ -207,14 +221,16 @@ describe('jsonref', function() {
         scope: 'http://example.com'
       }).should.be.rejectedWith(Error, /No retriever/);
     });
-    it('should throw if a referenced url cannot be downloaded (retriever error)', function() {
-      return jsonref.parse({
+    it('should throw if a referenced url cannot be downloaded (retriever error)', async function() {
+      const err: any = await jsonref.parse({
         a: {
           $ref: 'http://other.example.com'
         }
       }, {
         scope: 'http://example.com', retriever: () => { throw new Error('failed') }
-      }).should.be.rejectedWith(Error, /failed/);
+      }).should.be.rejectedWith(jsonref.ParserError, 'retriever');
+      err.errors.length.should.equal(1);
+      err.errors[0].message.should.equal('http://other.example.com/#')
     });
 
   });

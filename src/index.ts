@@ -1,6 +1,8 @@
+import { ParserError, RetrieverError } from './errors';
 import * as meta from './meta';
 import { resolve as refResolver } from './ref';
 
+export * from './errors';
 export { getMeta, isAnnotated, isRef, Meta, normalize, normalizeUri, Registry } from './meta';
 export { resolve as pointer } from './pointer';
 
@@ -53,11 +55,19 @@ export async function parse(dataOrUri: any, opts: ParseOptions): Promise<any> {
           throw new Error('No retriever');
         }
         const registry = meta.getMeta(obj).registry;
+        const errors: RetrieverError[] = [];
         for (let r of missingRefs) {
-          registry[r] = await opts.retriever(r);
+          try {
+            registry[r] = await opts.retriever(r);
+          } catch(e) {
+            errors.push(new RetrieverError(r, e));
+          }
+        }
+        if (errors.length) {
+          throw new ParserError(meta.getMeta(obj).scope, 'retriever', errors);
         }
       }
-    
+
       return refResolver(obj, opts);
     } else {
       return obj;

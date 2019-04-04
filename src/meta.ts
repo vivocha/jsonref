@@ -17,6 +17,7 @@ export interface Meta {
   scope: string;
   root: any;
   parent?: any;
+  derefd?: boolean;
 }
 
 const __meta = Symbol();
@@ -33,6 +34,9 @@ export function isRef(obj: any): boolean {
 }
 export function isAnnotated(obj: any): boolean {
   return obj !== null && typeof obj === 'object' && typeof obj[__meta] === 'object';
+}
+export function isDerefd(obj: any): boolean {
+  return isAnnotated(obj) && obj[__meta].derefd === true;
 }
 export function getMeta(obj: any): Meta {
   if (!isAnnotated(obj)) {

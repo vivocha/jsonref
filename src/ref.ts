@@ -25,11 +25,13 @@ export function resolve(obj: any, options: meta.Options): any {
   if (obj === null || typeof obj !== 'object') {
     return obj;
   }
-  if (!meta.isAnnotated(obj)) {
-    obj = meta.annotate(obj, options);
-  }
   return (function _parse(obj: any): any {
-    if (meta.isRef(obj)) {
+    if (!meta.isAnnotated(obj)) {
+      obj = meta.annotate(obj, options);
+    }
+    if (meta.isDerefd(obj)) {
+      return obj;
+    } else if (meta.isRef(obj)) {
       return deref(obj);
     } else {
       const orig = Object.assign({}, obj);
@@ -43,6 +45,7 @@ export function resolve(obj: any, options: meta.Options): any {
         const next = obj[key];
         obj[key] = (next !== null && typeof next === 'object') ? _parse(next) : next;
       }
+      meta.getMeta(obj).derefd = true;
       return obj;
     }
   })(obj);
