@@ -5,8 +5,14 @@ export class RetrieverError extends Error {
   }
 }
 export class ParserError extends Error {
-  constructor(public scope:string, type:string, public errors?: Error[]) {
+  constructor(public scope: string, type: string, public errors?: Error[]) {
     super(type);
     this.name = 'ParserError';
+  }
+}
+export class RebaserError extends Error {
+  constructor(public scope: string, type: string, public errors?: Error[]) {
+    super(type);
+    this.name = 'RebaserError';
   }
 }

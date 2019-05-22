@@ -1,30 +1,26 @@
-import { isRef } from './meta';
+import { RebaserError } from './errors';
 
 export interface Rebaser {
   (id: string, obj: any): any;
 }
 
 /**
- * Rebase JSON Schema $refs (only) to OpenAPI spec-related paths.
- * In particular, rebase:
- * <ext_schema_name>#/definitions/<schema_name> to #/components/schemas/<ext_schema_name>/definitions/<schema_name>
- * and
- * #/definitions/<schema_def_name> to #/components/schemas/<schema_name>/definitions/<schema_def_name>
+ * Rebase JSON $refs properties (only) as specified by the rebase function.
  *
- * @export
- * @param {string} id - name of the schema
- * @param {*} obj - schema object
- * @param {Function} [rebaser]
- * @returns {*} a copy of the passed schema with rebased $refs.
+ * @param {string} id - id of the JSON (e.g., name of the schema in case of a JSON schema)
+ * @param {*} obj - the JSON object
+ * @param {Function} rebaser - the function which changes refs values as required by the specific application
+ * @throws error - in case of error rebasing the object
+ * @returns {*} a copy of the passed JSON object with rebased $refs, in case of success.
  */
 export function rebase(id: string, obj: any, rebaser?: Rebaser): any {
-  // cyclic schema objects registry
+  // visited objects properties registry
   const parsedProps: string[] = [];
   let copy = JSON.parse(JSON.stringify(obj));
   try {
     (function findAndRebase(obj: any) {
       for (const key of Object.keys(obj)) {
-        if (isRef(key) === true) {
+        if (key === '$ref') {
           if (rebaser) {
             rebaser(id, obj);
           }
@@ -46,8 +42,7 @@ export function rebase(id: string, obj: any, rebaser?: Rebaser): any {
       }
     })(copy);
   } catch (error) {
-    console.error('Error changing $ref, no rebasing performed', error);
-    return obj;
+    throw new RebaserError('rebase', 'error', [error]);
   }
   // original schema is preserved.
   return copy;
