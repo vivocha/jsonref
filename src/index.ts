@@ -5,14 +5,15 @@ import { resolve as refResolver } from './ref';
 export * from './errors';
 export { getMeta, isAnnotated, isRef, Meta, normalize, normalizeUri, Registry } from './meta';
 export { resolve as pointer } from './pointer';
+export * from './rebase';
 
-export type Retriever = (url: string)=>Promise<any>;
+export type Retriever = (url: string) => Promise<any>;
 
 export interface ParseOptions extends meta.Options {
   retriever?: Retriever;
 }
 
-export function scope(data: any): string|undefined {
+export function scope(data: any): string | undefined {
   if (meta.isAnnotated(data)) {
     return meta.getMeta(data).scope;
   }
@@ -28,7 +29,7 @@ export async function parse(dataOrUri: any, opts: ParseOptions): Promise<any> {
     if (!opts.retriever) {
       throw new Error('No retriever');
     }
-    const uri = (new URL(dataOrUri)).toString();
+    const uri = new URL(dataOrUri).toString();
     obj = await opts.retriever(uri);
     if (!opts.registry) {
       opts.registry = {};
@@ -49,7 +50,7 @@ export async function parse(dataOrUri: any, opts: ParseOptions): Promise<any> {
 
     if (meta.getMeta(obj).refs.size > 0) {
       const missingRefs = meta.missingRefs(obj);
-  
+
       if (missingRefs.length) {
         if (!opts.retriever) {
           throw new Error('No retriever');
@@ -59,7 +60,7 @@ export async function parse(dataOrUri: any, opts: ParseOptions): Promise<any> {
         for (let r of missingRefs) {
           try {
             registry[r] = await opts.retriever(r);
-          } catch(e) {
+          } catch (e) {
             errors.push(new RetrieverError(r, e));
           }
         }
@@ -74,4 +75,3 @@ export async function parse(dataOrUri: any, opts: ParseOptions): Promise<any> {
     }
   }
 }
-
