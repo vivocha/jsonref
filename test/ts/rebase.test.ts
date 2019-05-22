@@ -292,6 +292,61 @@ describe('rebasing refs', function() {
         s.$ref.should.equal('my_object#/b/c');
       }
     });
+    it('should return an obj with all $refs set to id#/b/c using a proper rebaser function in case of a JSON without arrays', function() {
+      const obj = {
+        description: 'An object',
+        type: 'object',
+        definitions: {
+          defA: {
+            type: 'object',
+            properties: {
+              id: { $ref: 'global#/definitions/nonEmptyString' },
+              type: { $ref: 'global#/definitions/nonEmptyString' },
+              labelId: { $ref: 'global#/definitions/nonEmptyString' },
+              format: { $ref: 'global#/definitions/nonEmptyString' }
+            }
+          }
+        }
+      };
+      const rebaser: Rebaser = (id: string, obj: any) => {
+        obj.$ref = `${id}#/b/c`;
+        return obj;
+      };
+      const rebased = rebase('my_object', obj, rebaser);
+      should.not.exist(JSON.stringify(rebased).match(new RegExp('(.+)#/definitions/(.+)', 'g')));
+      should.not.exist(JSON.stringify(rebased).match(new RegExp('#/definitions/(.+)', 'g')));
+      rebased.definitions.defA.properties.id.$ref.should.equal('my_object#/b/c');
+      rebased.definitions.defA.properties.type.$ref.should.equal('my_object#/b/c');
+      rebased.definitions.defA.properties.labelId.$ref.should.equal('my_object#/b/c');
+      rebased.definitions.defA.properties.format.$ref.should.equal('my_object#/b/c');
+    });
+    it('should return an obj with all $refs set to id#/b/c using a proper rebaser function in case cyclic links', function() {
+      const obj = {
+        description: 'An object',
+        type: 'object',
+        definitions: {
+          defA: {
+            type: 'object',
+            properties: {
+              id: { $ref: 'global#/definitions/nonEmptyString' },
+              type: { $ref: 'global#/definitions/nonEmptyString' },
+              labelId: { $ref: 'global#/definitions/nonEmptyString' },
+              format: { $ref: 'global#/definitions/nonEmptyString' },
+              self: this
+            }
+          }
+        }
+      };
+      const rebaser: Rebaser = (id: string, obj: any) => {
+        obj.$ref = `${id}#/b/c`;
+        return obj;
+      };
+      const rebased = rebase('my_object', obj, rebaser);
+      rebased.definitions.defA.properties.id.$ref.should.equal('my_object#/b/c');
+      rebased.definitions.defA.properties.type.$ref.should.equal('my_object#/b/c');
+      rebased.definitions.defA.properties.labelId.$ref.should.equal('my_object#/b/c');
+      rebased.definitions.defA.properties.format.$ref.should.equal('my_object#/b/c');
+    });
     it('should return an obj with all $refs correctly set using a proper rebaser function', function() {
       const obj = {
         description: 'An object',

@@ -6,6 +6,7 @@ export interface Rebaser {
 
 /**
  * Rebase JSON $refs properties (only) as specified by the rebase function.
+ * It modifies the passed object.
  *
  * @param {string} id - id of the JSON (e.g., name of the schema in case of a JSON schema)
  * @param {*} obj - the JSON object
@@ -15,8 +16,7 @@ export interface Rebaser {
  */
 export function rebase(id: string, obj: any, rebaser?: Rebaser): any {
   // visited objects properties registry
-  const parsedProps: string[] = [];
-  let copy = JSON.parse(JSON.stringify(obj));
+  const parsedProps: any[] = [];
   try {
     (function findAndRebase(obj: any) {
       for (const key of Object.keys(obj)) {
@@ -40,10 +40,9 @@ export function rebase(id: string, obj: any, rebaser?: Rebaser): any {
           }
         }
       }
-    })(copy);
+    })(obj);
   } catch (error) {
     throw new RebaserError('rebase', 'error', [error]);
   }
-  // original schema is preserved.
-  return copy;
+  return obj;
 }
