@@ -1,14 +1,13 @@
-import { URL } from "url";
 import { escape } from './utils';
 
 export interface Registry {
-  [uri: string]: any
-};
+  [uri: string]: any;
+}
 
 export interface Options {
   scope: string;
   registry?: Registry;
-  refs?: Set<string>
+  refs?: Set<string>;
 }
 
 export interface Meta {
@@ -44,12 +43,12 @@ export function getMeta(obj: any): Meta {
   }
   return obj[__meta];
 }
-export function getKey(obj: any): string|number|undefined {
+export function getKey(obj: any): string | number | undefined {
   const parent = getMeta(obj).parent;
   if (typeof parent === 'undefined') {
     return undefined;
   } else if (Array.isArray(parent)) {
-    for (let i = 0 ; i < parent.length ; i++) {
+    for (let i = 0; i < parent.length; i++) {
       if (parent[i] === obj) {
         return i;
       }
@@ -75,13 +74,13 @@ export function annotate(obj: any, options: Options): any {
   obj[__meta] = {
     registry: options.registry || {},
     refs: options.refs || new Set(),
-    root: obj 
+    root: obj
   } as Registry;
   obj[__meta].registry[normalizeUri(options.scope)] = obj;
   return (function _annotate(obj: any, scope: string): any {
     if (isRef(obj)) {
       const uri = new URL(obj.$ref, scope);
-      uri.hash = '#'
+      uri.hash = '#';
       getMeta(obj).refs.add(uri.toString());
       obj[__meta].scope = normalizeUri(scope);
     } else {
@@ -113,7 +112,7 @@ export function annotate(obj: any, options: Options): any {
             refs: meta.refs,
             parent: obj,
             root: meta.root
-          }
+          };
           _annotate(next, `${meta.scope}/${escape(key)}`);
         }
       }
