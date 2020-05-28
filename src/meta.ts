@@ -25,8 +25,8 @@ export const LII_RE: RegExp = /^[a-zA-Z][a-zA-Z0-9\.\-_:]*$/; // Location-indepe
 
 export function normalizeUri(input: string, scope?: string): string {
   const uri = new URL(input, scope);
-  if (!uri.hash) uri.hash = '#';
-  return uri.toString();
+  const out = uri.toString();
+  return out + (!uri.hash && out[out.length-1] !== '#' ? '#' : '');
 }
 export function isRef(obj: any): boolean {
   return obj !== null && typeof obj === 'object' && typeof obj.$ref === 'string';
