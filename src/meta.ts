@@ -26,7 +26,7 @@ export const LII_RE: RegExp = /^[a-zA-Z][a-zA-Z0-9\.\-_:]*$/; // Location-indepe
 export function normalizeUri(input: string, scope?: string): string {
   const uri = new URL(input, scope);
   const out = uri.toString();
-  return out + (!uri.hash && out[out.length-1] !== '#' ? '#' : '');
+  return out + (!uri.hash && out[out.length - 1] !== '#' ? '#' : '');
 }
 export function isRef(obj: any): boolean {
   return obj !== null && typeof obj === 'object' && typeof obj.$ref === 'string';
@@ -80,8 +80,8 @@ export function annotate(obj: any, options: Options): any {
   return (function _annotate(obj: any, scope: string): any {
     if (isRef(obj)) {
       const uri = new URL(obj.$ref, scope);
-      uri.hash = '#';
-      getMeta(obj).refs.add(uri.toString());
+      uri.hash = '';
+      getMeta(obj).refs.add(uri.toString() + '#');
       obj[__meta].scope = normalizeUri(scope);
     } else {
       if (typeof obj.$id === 'string') {
@@ -89,14 +89,10 @@ export function annotate(obj: any, options: Options): any {
           throw new SyntaxError(`Invalid identifier ${obj.$id}`);
         }
         const id = new URL(obj.$id, scope);
-        if (id.hash) {
-          if (!id.hash.substr(1).match(LII_RE)) {
-            throw new SyntaxError(`Invalid identifier ${obj.$id}`);
-          }
-        } else {
-          id.hash = '#';
+        if (id.hash && !id.hash.substr(1).match(LII_RE)) {
+          throw new SyntaxError(`Invalid identifier ${obj.$id}`);
         }
-        obj[__meta].scope = id.toString();
+        obj[__meta].scope = normalizeUri(obj.$id, scope);
         obj[__meta].registry[obj[__meta].scope] = obj;
         obj[__meta].root = obj;
       } else {
