@@ -30,6 +30,9 @@ describe('meta', function() {
       meta.normalizeUri('http://example.com').should.equal('http://example.com/#');
       meta.normalizeUri('http://example.com#aaa').should.equal('http://example.com/#aaa');
     });
+    it('should append # if the normalized url hasn\'t', function() {
+      meta.normalizeUri('http://super-mario.world/a/b').should.equal('http://super-mario.world/a/b#');
+    });
   });
 
   describe('isRef', function() {

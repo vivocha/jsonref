@@ -11,8 +11,8 @@ function deref(obj: any): any {
     const scope = meta.getMeta(obj).scope;
     const uri = new URL(obj.$ref, scope);
     const path = uri.hash ? uri.hash.substr(1) : undefined;
-    uri.hash = '#';
-    out = meta.getMeta(obj).registry[uri.toString()];
+    uri.hash = '';
+    out = meta.getMeta(obj).registry[uri.toString() + '#'];
     if (!out) {
       throw new Error(`Reference not in registry (${uri.toString()})`);
     } else if (path) {
