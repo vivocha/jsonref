@@ -4,6 +4,7 @@ import { resolve as refResolver } from './ref';
 
 export * from './errors';
 export { getMeta, isAnnotated, isRef, Meta, normalize, normalizeUri, Registry } from './meta';
+export * from './patch';
 export { resolve as pointer } from './pointer';
 export * from './rebase';
 
