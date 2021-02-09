@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import { diff, patch, toMongoUpdate } from '../../dist/patch';
+import { diff, patch } from '../../dist/patch';
 
 chai.use(chaiAsPromised);
 const should = chai.should();
@@ -197,101 +197,6 @@ describe('patch', function () {
     it("should fail with a '-' index", function () {
       should.Throw(function () {
         patch({ a: [1] }, [{ op: 'test', path: '/a/-', value: 1 }]);
-      }, "cannot use '-' index in path of test");
-    });
-  });
-});
-
-describe('toMongoUpdate', function () {
-  describe('add', function () {
-    it("should convert 'add' into $set", function () {
-      toMongoUpdate([
-        { op: 'add', path: '/a', value: 1 },
-        { op: 'add', path: '/b', value: 2 },
-      ]).should.deep.equal({ doc: { $set: { a: 1, b: 2 } } });
-      toMongoUpdate([{ op: 'add', path: '/a/0', value: 1 }]).should.deep.equal({ doc: { $set: { 'a.0': 1 } } });
-    });
-    it("should convert 'add' into $push", function () {
-      toMongoUpdate([
-        { op: 'add', path: '/a/-', value: 1 },
-        { op: 'add', path: '/b/-', value: 2 },
-      ]).should.deep.equal({ doc: { $push: { a: 1, b: 2 } } });
-    });
-    it('should fail with an empty path', function () {
-      should.Throw(function () {
-        toMongoUpdate([{ op: 'add', path: '', value: 1 }]);
-      }, 'path cannot be empty');
-    });
-    it('should fail to $push at root', function () {
-      should.Throw(function () {
-        toMongoUpdate([{ op: 'add', path: '/-', value: 1 }]);
-      }, "cannot use '-' index at root of path");
-    });
-  });
-  describe('replace', function () {
-    it("should convert 'replace' into $set and query", function () {
-      toMongoUpdate([
-        { op: 'replace', path: '/a', value: 1 },
-        { op: 'replace', path: '/b', value: 2 },
-      ]).should.deep.equal({ doc: { $set: { a: 1, b: 2 } }, query: { a: { $exists: true }, b: { $exists: true } } });
-    });
-    it("should fail with a '-' index", function () {
-      should.Throw(function () {
-        toMongoUpdate([{ op: 'replace', path: '/-', value: 1 }]);
-      }, "cannot use '-' index in path of replace");
-    });
-  });
-  describe('move', function () {
-    it("should convert 'move' into $replace", function () {
-      toMongoUpdate([
-        { op: 'move', from: '/a', path: '/b' },
-        { op: 'move', from: '/c.d', path: '/e' },
-      ]).should.deep.equal({ doc: { $rename: { a: 'b', 'c.d': 'e' } } });
-    });
-    it("should fail with a '-' index", function () {
-      should.Throw(function () {
-        toMongoUpdate([{ op: 'move', from: '/a/-', path: '/b' }]);
-      }, "cannot use '-' index in from path of move");
-      should.Throw(function () {
-        toMongoUpdate([{ op: 'move', from: '/a', path: '/b/-' }]);
-      }, "cannot use '-' index in path of move");
-    });
-    it('should fail with an empty from path', function () {
-      should.Throw(function () {
-        toMongoUpdate([{ op: 'move', from: '', path: '/b' }]);
-      }, 'from path cannot be empty');
-    });
-  });
-  describe('remove', function () {
-    it("should convert 'remove' into $unset", function () {
-      toMongoUpdate([
-        { op: 'remove', path: '/a' },
-        { op: 'remove', path: '/b' },
-      ]).should.deep.equal({ doc: { $unset: { a: 1, b: 1 } } });
-    });
-    it("should fail with a '-' index", function () {
-      should.Throw(function () {
-        toMongoUpdate([{ op: 'remove', path: '/-' }]);
-      }, "cannot use '-' index in path of remove");
-    });
-  });
-  describe('copy', function () {
-    it('should fail', function () {
-      should.Throw(function () {
-        toMongoUpdate([{ op: 'copy', from: '/a', path: '/b' }]);
-      }, 'copy not supported');
-    });
-  });
-  describe('test', function () {
-    it("should convert 'test' into a query", function () {
-      toMongoUpdate([
-        { op: 'test', path: '/a', value: 1 },
-        { op: 'test', path: '/b', value: 2 },
-      ]).should.deep.equal({ query: { a: 1, b: 2 } });
-    });
-    it("should fail with a '-' index", function () {
-      should.Throw(function () {
-        toMongoUpdate([{ op: 'test', path: '/-', value: 1 }]);
       }, "cannot use '-' index in path of test");
     });
   });
