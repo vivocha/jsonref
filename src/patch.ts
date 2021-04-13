@@ -78,7 +78,7 @@ export function patch(obj: any, patch: JSONPatch): any {
           }
           parent.push(p.value);
         } else {
-          if (parent[key!]) {
+          if (typeof parent[key!] !== 'undefined') {
             throw new Error('cannot add, path exists');
           }
           parent[key!] = p.value;
@@ -88,7 +88,7 @@ export function patch(obj: any, patch: JSONPatch): any {
         if (key === '-') {
           throw new Error("cannot use '-' index in path of replace");
         }
-        if (!parent[key!]) {
+        if (typeof parent[key!] === 'undefined') {
           throw new Error('cannot replace, path does not exist');
         }
         parent[key!] = p.value;
@@ -104,7 +104,7 @@ export function patch(obj: any, patch: JSONPatch): any {
             throw new Error("cannot use '-' index in from path of move");
           }
           const fromParent = from.length ? pointer.resolve(out, `/${from.join('/')}`) : out;
-          if (!fromParent[fromKey!]) {
+          if (typeof fromParent[fromKey!] === 'undefined') {
             throw new Error('cannot move, from path does not exist');
           }
           if (key === '-') {
@@ -125,7 +125,7 @@ export function patch(obj: any, patch: JSONPatch): any {
       case 'remove':
         if (key === '-') {
           throw new Error("cannot use '-' index in path of remove");
-        } else if (!parent[key!]) {
+        } else if (typeof parent[key!] === 'undefined') {
           throw new Error('cannot remove, path does not exist');
         }
         if (Array.isArray(parent)) {
@@ -145,7 +145,7 @@ export function patch(obj: any, patch: JSONPatch): any {
             throw new Error("cannot use '-' index in from path of copy");
           }
           const fromParent = from.length ? pointer.resolve(out, `/${from.join('/')}`) : out;
-          if (!fromParent[fromKey!]) {
+          if (typeof fromParent[fromKey!] === 'undefined') {
             throw new Error('cannot move, from path does not exist');
           }
           if (key === '-') {
