@@ -16,7 +16,7 @@ function deref(obj: any): any {
     if (!out) {
       throw new Error(`Reference not in registry (${uri.toString()})`);
     } else if (path) {
-      out =  pointer.resolve(out, path);
+      out = pointer.resolve(out, path);
     }
   }
   return out;
@@ -38,12 +38,32 @@ export function resolve(obj: any, options: meta.Options): any {
       Object.defineProperty(obj, 'toJSON', {
         get: () => () => orig,
         enumerable: false,
-        configurable: false
+        configurable: false,
       });
       const keys = Object.keys(obj);
       for (let key of keys) {
         const next = obj[key];
-        obj[key] = (next !== null && typeof next === 'object') ? _parse(next) : next;
+        if (next !== null && typeof next === 'object') {
+          if (meta.isRef(next)) {
+            Object.defineProperty(obj, key, {
+              get: () => {
+                Object.defineProperty(obj, key, {
+                  value: deref(next),
+                  enumerable: true,
+                  configurable: true,
+                  writable: true,
+                });
+                return obj[key];
+              },
+              enumerable: true,
+              configurable: true,
+            });
+          } else {
+            obj[key] = _parse(next);
+          }
+        } else {
+          obj[key] = next;
+        }
       }
       meta.getMeta(obj).derefd = true;
       return obj;

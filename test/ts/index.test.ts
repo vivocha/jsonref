@@ -277,159 +277,173 @@ describe('jsonref', function () {
       err.errors.length.should.equal(1);
       err.errors[0].message.should.equal('http://other.example.com/#');
     });
+
+    it('should handle chained refs', async function () {
+      const data = { A: { $ref: '#/B' }, B: { $ref: '#/C' }, C: { $ref: '#/D' }, D: 'Value' };
+      const json = JSON.stringify(data);
+      const parsed = await jsonref.parse(data, { scope: 'http://example.com' });
+      parsed.A.should.equal('Value');
+      parsed.B.should.equal('Value');
+      parsed.C.should.equal('Value');
+      parsed.A = 'Changed';
+      parsed.A.should.equal('Changed');
+      parsed.B.should.equal('Value');
+      parsed.C.should.equal('Value');
+      parsed.D.should.equal('Value');
+      JSON.stringify(parsed).should.equal(json);
+    });
   });
 
-  describe('getMeta', function() {
-    it('should throw if no obj is passed', function() {
-      (function() {
+  describe('getMeta', function () {
+    it('should throw if no obj is passed', function () {
+      (function () {
         jsonref.getMeta(undefined);
-      }).should.throw(Error, /Not annotated/);
+      }.should.throw(Error, /Not annotated/));
     });
-    it('should throw if obj is not annotated', function() {
-      (function() {
+    it('should throw if obj is not annotated', function () {
+      (function () {
         jsonref.getMeta({});
-      }).should.throw(Error, /Not annotated/);
+      }.should.throw(Error, /Not annotated/));
     });
   });
 
-  describe('isAnnotated', function() {
-    it('should return false if obj is null', function() {
+  describe('isAnnotated', function () {
+    it('should return false if obj is null', function () {
       jsonref.isAnnotated(null).should.equal(false);
     });
-    it('should return false if obj is not an object', function() {
+    it('should return false if obj is not an object', function () {
       jsonref.isAnnotated(1).should.equal(false);
     });
-    it('should return false if obj is not annotated', function() {
+    it('should return false if obj is not annotated', function () {
       jsonref.isAnnotated({}).should.equal(false);
     });
   });
 
-  describe('isRef', function() {
-    it('should return false if obj is null', function() {
+  describe('isRef', function () {
+    it('should return false if obj is null', function () {
       jsonref.isRef(null).should.equal(false);
     });
-    it('should return false if obj is not an object', function() {
+    it('should return false if obj is not an object', function () {
       jsonref.isRef(1).should.equal(false);
     });
-    it('should return false if obj is not ref', function() {
+    it('should return false if obj is not ref', function () {
       jsonref.isRef({}).should.equal(false);
     });
-    it('should return true if obj is ref', function() {
+    it('should return true if obj is ref', function () {
       jsonref.isRef({ $ref: 'a' }).should.equal(true);
     });
-    it('should return true if obj is ref and has additional properties', function() {
+    it('should return true if obj is ref and has additional properties', function () {
       jsonref.isRef({ $ref: 'a', x: 1 }).should.equal(true);
     });
   });
 
-  describe('normalize', function() {
-    it('should throw if obj is not annotated', function() {
-      (function() {
+  describe('normalize', function () {
+    it('should throw if obj is not annotated', function () {
+      (function () {
         jsonref.normalize({ a: { $id: '#1/a' } });
-      }).should.throw(Error, /Not annotated/);
+      }.should.throw(Error, /Not annotated/));
     });
   });
 
-  describe('normalizeUri', function() {
-    it('should throw if no url is passed', function() {
-      (function() {
+  describe('normalizeUri', function () {
+    it('should throw if no url is passed', function () {
+      (function () {
         jsonref.normalizeUri('');
-      }).should.throw(TypeError, /Invalid URL/);
+      }.should.throw(TypeError, /Invalid URL/));
     });
-    it('should throw if an invalid url is passed', function() {
-      (function() {
+    it('should throw if an invalid url is passed', function () {
+      (function () {
         jsonref.normalizeUri('??a');
-      }).should.throw(TypeError, /Invalid URL/);
+      }.should.throw(TypeError, /Invalid URL/));
     });
-    it('should throw if a relative url is passed without a scope', function() {
-      (function() {
+    it('should throw if a relative url is passed without a scope', function () {
+      (function () {
         jsonref.normalizeUri('/a');
-      }).should.throw(TypeError, /Invalid URL/);
+      }.should.throw(TypeError, /Invalid URL/));
     });
-    it('should normalized a relative url', function() {
+    it('should normalized a relative url', function () {
       jsonref.normalizeUri('/a', 'http://example.com').should.equal('http://example.com/a#');
     });
-    it('should normalized an absolute url', function() {
+    it('should normalized an absolute url', function () {
       jsonref.normalizeUri('http://example.com').should.equal('http://example.com/#');
       jsonref.normalizeUri('http://example.com#aaa').should.equal('http://example.com/#aaa');
     });
-    it('should append # if the normalized url hasn\'t', function() {
+    it("should append # if the normalized url hasn't", function () {
       jsonref.normalizeUri('http://super-mario.world/a/b').should.equal('http://super-mario.world/a/b#');
     });
   });
 
-  describe('Pointer', function() {
-    it('should throw if obj is undefined', function() {
-      (function() {
+  describe('Pointer', function () {
+    it('should throw if obj is undefined', function () {
+      (function () {
         jsonref.pointer(undefined, '');
-      }).should.throw(TypeError, /Bad object/);
+      }.should.throw(TypeError, /Bad object/));
     });
-    it('should throw if path is not a string', function() {
-      (function() {
-        jsonref.pointer({}, 1 as any as string);
-      }).should.throw(TypeError, /Bad path/);
+    it('should throw if path is not a string', function () {
+      (function () {
+        jsonref.pointer({}, (1 as any) as string);
+      }.should.throw(TypeError, /Bad path/));
     });
-    it('should throw if path contains parts pointing to scalars', function() {
-      (function() {
+    it('should throw if path contains parts pointing to scalars', function () {
+      (function () {
         jsonref.pointer({ a: 5 }, '/a/b');
-      }).should.throw(TypeError, /Invalid type at path/);
+      }.should.throw(TypeError, /Invalid type at path/));
     });
-    it('should throw if path contains parts pointing an uknown property', function() {
-      (function() {
+    it('should throw if path contains parts pointing an uknown property', function () {
+      (function () {
         jsonref.pointer({ a: { b: 5 } }, '/a/c');
-      }).should.throw(RangeError, /Cannot find property/);
+      }.should.throw(RangeError, /Cannot find property/));
     });
-    it('should throw if an array is indexed with a bad index', function() {
-      (function() {
-        jsonref.pointer({ a: [ 'x', 'y' ] }, '/a/c');
-      }).should.throw(SyntaxError, /Invalid array index/);
+    it('should throw if an array is indexed with a bad index', function () {
+      (function () {
+        jsonref.pointer({ a: ['x', 'y'] }, '/a/c');
+      }.should.throw(SyntaxError, /Invalid array index/));
     });
-    it('should throw if an array is indexed with a dash', function() {
-      (function() {
-        jsonref.pointer({ a: [ 'x', 'y' ] }, '/a/-');
-      }).should.throw(RangeError, /Index out of bounds/);
+    it('should throw if an array is indexed with a dash', function () {
+      (function () {
+        jsonref.pointer({ a: ['x', 'y'] }, '/a/-');
+      }.should.throw(RangeError, /Index out of bounds/));
     });
-    it('should throw if an array is indexed with an index out of bounds', function() {
-      (function() {
-        jsonref.pointer({ a: [ 'x', 'y' ] }, '/a/4');
-      }).should.throw(RangeError, /Index out of bounds/);
+    it('should throw if an array is indexed with an index out of bounds', function () {
+      (function () {
+        jsonref.pointer({ a: ['x', 'y'] }, '/a/4');
+      }.should.throw(RangeError, /Index out of bounds/));
     });
-    it('should return an array element', function() {
-      jsonref.pointer({ a: [ 'x', 'y' ] }, '/a/1').should.equal('y');
+    it('should return an array element', function () {
+      jsonref.pointer({ a: ['x', 'y'] }, '/a/1').should.equal('y');
     });
-    it('should return an object property', function() {
+    it('should return an object property', function () {
       jsonref.pointer({ a: { b: 5 } }, '/a/b').should.equal(5);
     });
-    it('should return obj is path is an empty string', function() {
+    it('should return obj is path is an empty string', function () {
       const data = {};
       jsonref.pointer(data, '').should.equal(data);
     });
-    it('should conform with the examples in chapter 5 of RFC6901', function() {
+    it('should conform with the examples in chapter 5 of RFC6901', function () {
       const data = {
-        "foo": [ "bar", "baz" ],
-        "": 0,
-        "a/b": 1,
-        "c%d": 2,
-        "e^f": 3,
-        "g|h": 4,
-        "i\\j": 5,
-        "k\"l": 6,
-        " ": 7,
-        "m~n": 8
+        foo: ['bar', 'baz'],
+        '': 0,
+        'a/b': 1,
+        'c%d': 2,
+        'e^f': 3,
+        'g|h': 4,
+        'i\\j': 5,
+        'k"l': 6,
+        ' ': 7,
+        'm~n': 8,
       };
-      jsonref.pointer(data, "").should.equal(data);
-      jsonref.pointer(data, "/foo").should.equal(data.foo);
-      jsonref.pointer(data, "/foo/0").should.equal("bar");
-      jsonref.pointer(data, "/").should.equal(0);
-      jsonref.pointer(data, "/a~1b").should.equal(1);
-      jsonref.pointer(data, "/c%d").should.equal(2);
-      jsonref.pointer(data, "/e^f").should.equal(3);
-      jsonref.pointer(data, "/g|h").should.equal(4);
-      jsonref.pointer(data, "/i\\j").should.equal(5);
-      jsonref.pointer(data, "/k\"l").should.equal(6);
-      jsonref.pointer(data, "/ ").should.equal(7);
-      jsonref.pointer(data, "/m~0n").should.equal(8);
+      jsonref.pointer(data, '').should.equal(data);
+      jsonref.pointer(data, '/foo').should.equal(data.foo);
+      jsonref.pointer(data, '/foo/0').should.equal('bar');
+      jsonref.pointer(data, '/').should.equal(0);
+      jsonref.pointer(data, '/a~1b').should.equal(1);
+      jsonref.pointer(data, '/c%d').should.equal(2);
+      jsonref.pointer(data, '/e^f').should.equal(3);
+      jsonref.pointer(data, '/g|h').should.equal(4);
+      jsonref.pointer(data, '/i\\j').should.equal(5);
+      jsonref.pointer(data, '/k"l').should.equal(6);
+      jsonref.pointer(data, '/ ').should.equal(7);
+      jsonref.pointer(data, '/m~0n').should.equal(8);
     });
   });
-
 });
