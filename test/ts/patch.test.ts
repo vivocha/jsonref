@@ -25,7 +25,7 @@ describe('diff', function () {
     diff([1, 2, 3], [1, 2]).should.deep.equal([{ op: 'remove', path: '/2' }]);
     diff([1, 2, 3], [1, 3]).should.deep.equal([
       { op: 'replace', path: '/1', value: 3 },
-      { op: 'remove', path: '/2' },
+      { op: 'remove', path: '/2' }
     ]);
     diff([1, 2], [1, 2, 3]).should.deep.equal([{ op: 'add', path: '/-', value: 3 }]);
     diff({ a: [1, 2, 3] }, { a: [1, 2] }).should.deep.equal([{ op: 'remove', path: '/a/2' }]);
@@ -37,7 +37,7 @@ describe('diff', function () {
     diff({ a: 1 }, { a: 1, b: 2 }).should.deep.equal([{ op: 'add', path: '/b', value: 2 }]);
     diff({ a: 1 }, { b: 2 }).should.deep.equal([
       { op: 'remove', path: '/a' },
-      { op: 'add', path: '/b', value: 2 },
+      { op: 'add', path: '/b', value: 2 }
     ]);
     diff({ a: { b: { c: 1 } } }, { a: { b: { c: 2 } } }).should.deep.equal([{ op: 'replace', path: '/a/b/c', value: 2 }]);
   });
@@ -146,12 +146,82 @@ describe('patch', function () {
     it('should fail if from path does not exist', function () {
       should.Throw(function () {
         patch({ a: 1 }, [{ op: 'remove', path: '/b' }]);
-      }, 'cannot remove, path does not exist');
+      }, 'cannot remove, path /b does not exist');
     });
     it("should fail with a '-' index", function () {
       should.Throw(function () {
         patch({ a: [1] }, [{ op: 'remove', path: '/a/-' }]);
       }, "cannot use '-' index in path of remove");
+    });
+    it('should remove items at the end of an array', function () {
+      const a1 = { a: [1, 2, 4, 5, 6, 7, 8, 9] };
+      const a2 = { a: [1, 2, 4, 5, 6, 7] };
+      const d = diff(a1, a2);
+      patch(a1, d).should.deep.equal({ a: [1, 2, 4, 5, 6, 7] });
+
+      const b1 = ['ciao', 'bye', 'hello', 'hi'];
+      const b2 = ['ciao'];
+      const d1 = diff(b1, b2);
+      patch(b1, d1).should.deep.equal(['ciao']);
+    });
+    it('should remove array items from a complex object', function () {
+      const c = {
+        nodes: ['aaa', 'bbb', 'ccc'],
+        actions: {
+          old: [{ id: 1 }, { id: 2 }],
+          new: [{ id: 99 }, { id: 156 }, { id: 9000 }, { id: 1000 }]
+        }
+      };
+      const c2 = {
+        nodes: [],
+        actions: {
+          old: [{ id: 2 }],
+          new: [{ id: 99 }, { id: 9000 }],
+          useless: [1, 2, 3, 4]
+        }
+      };
+      const d = diff(c, c2);
+      patch(c, d).should.deep.equal({
+        nodes: [],
+        actions: {
+          old: [{ id: 2 }],
+          new: [{ id: 99 }, { id: 9000 }],
+          useless: [1, 2, 3, 4]
+        }
+      });
+    });
+    it('should remove array items from matrix', function () {
+      const m = [
+        [1, 2, 3],
+        [3, 2, 1],
+        ['ciao', 'bye', 'hello'],
+        [{ k: 1 }, { k: 2 }, { k: 3 }]
+      ];
+      const m1 = [
+        [2, 3],
+        [{ k: 1 }, { k: 3 }]
+      ];
+      const d = diff(m, m1);
+      patch(m, d).should.deep.equal([
+        [2, 3],
+        [{ k: 1 }, { k: 3 }]
+      ]);
+    });
+    it('should remove array items', function () {
+      const k1 = [1, 2, 9];
+      const k2 = [2, 3, 4, 5, 19, 100];
+      const d1 = diff(k1, k2);
+      patch(k1, d1).should.deep.equal([2, 3, 4, 5, 19, 100]);
+
+      const j1 = [];
+      const j2 = [2, 3, 4, 5, 19, 100];
+      const d2 = diff(j1, j2);
+      patch(j1, d2).should.deep.equal([2, 3, 4, 5, 19, 100]);
+
+      const f1 = [2, 3, 4, 5, 19, 100];
+      const f2 = [];
+      const d3 = diff(f1, f2);
+      patch(f1, d3).should.deep.equal([]);
     });
   });
   describe('copy', function () {

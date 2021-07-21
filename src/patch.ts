@@ -40,8 +40,8 @@ export function diff(src: any, dst: any, path: string = '/'): JSONPatch {
         out = out.concat(diff(src[i], dst[i], `${path === '/' ? '' : path}/${i}`));
       }
       if (src.length > dst.length) {
-        for (let i = dst.length; i < src.length; i++) {
-          out.push({ op: 'remove', path: `${path === '/' ? '' : path}/${i}` });
+        for(let i = src.length; i > dst.length; i--) {
+          out.push({ op: 'remove', path: `${path === '/' ? '' : path}/${i-1}` });
         }
       } else if (src.length < dst.length) {
         for (let i = src.length; i < dst.length; i++) {
@@ -126,7 +126,7 @@ export function patch(obj: any, patch: JSONPatch): any {
         if (key === '-') {
           throw new Error("cannot use '-' index in path of remove");
         } else if (typeof parent[key!] === 'undefined') {
-          throw new Error('cannot remove, path does not exist');
+          throw new Error(`cannot remove, path ${p.path} does not exist`);
         }
         if (Array.isArray(parent)) {
           parent.splice(parseInt(key!), 1);
