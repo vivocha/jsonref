@@ -1,15 +1,17 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "es2017",
-        "noImplicitAny": false,
-        "sourceMap": true,
-        "declaration": true,
-        "outDir": "dist",
-        "strictNullChecks": true,
-        "allowJs": false
+      "incremental": true,
+      "module": "commonjs",
+      "target": "es2020",
+      "noImplicitAny": false,
+      "sourceMap": true,
+      "declaration": true,
+      "outDir": "dist",
+      "strictNullChecks": true,
+      "allowJs": false,
+      "experimentalDecorators": true,
+      "esModuleInterop": true
     },
-    "include": [
-        "src/**/*.ts"
-    ]
-}
+    "include": ["src/**/*.ts"]
+  }
+  
