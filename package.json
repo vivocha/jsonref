@@ -8,8 +8,7 @@
     "test": "test"
   },
   "files": [
-    "dist/**/*.js",
-    "dist/**/*.ts",
+    "dist",
     "README.md",
     "LICENSE"
   ],
