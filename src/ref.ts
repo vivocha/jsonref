@@ -1,5 +1,5 @@
-import * as meta from './meta';
-import * as pointer from './pointer';
+import * as meta from './meta.js';
+import * as pointer from './pointer.js';
 
 const RELATIVE_RE: RegExp = /^#(?:0|[1-9][0-9]*?)(?:$|\/)/;
 

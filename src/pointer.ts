@@ -1,13 +1,14 @@
-import * as meta from './meta';
-import { unescape } from './utils';
+import * as meta from './meta.js';
+import { unescape } from './utils.js';
 
 const PREFIX_RE: RegExp = /^(0|[1-9][0-9]*?)([#]?)$/;
 const INDEX_RE: RegExp = /-|0|[1-9][0-9]*/;
 
 export function getPointer(obj: any): string {
   const p: string[] = [];
-  let parent: any, current: any = obj;
-  while (parent = meta.getMeta(current).parent) {
+  let parent: any,
+    current: any = obj;
+  while ((parent = meta.getMeta(current).parent)) {
     const frag = meta.getKey(current);
     if (!frag) {
       throw new Error(`Failed to get key for ${JSON.stringify(current)}`);
@@ -39,7 +40,7 @@ export function resolve(obj: any, path: string): any {
         throw new SyntaxError(`Bad prefix ${prefix}`);
       } else {
         let levels = parseInt(match[1]);
-        while(levels--) {
+        while (levels--) {
           current = meta.getMeta(current).parent;
           if (!current) {
             throw new RangeError(`Invalid prefix "${match[1]}"`);
@@ -51,11 +52,11 @@ export function resolve(obj: any, path: string): any {
       }
     }
   }
-  while(parts.length) {
+  while (parts.length) {
     if (current === null || typeof current !== 'object') {
       throw new TypeError(`Invalid type at path`);
     }
-    const part = unescape((parts.shift() as string));
+    const part = unescape(parts.shift() as string);
     if (Array.isArray(current)) {
       if (!part.match(INDEX_RE)) {
         throw new SyntaxError(`Invalid array index "${part}"`);

@@ -1,7 +1,7 @@
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import * as spies from 'chai-spies';
-import * as jsonref from '../../dist/index';
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import spies from 'chai-spies';
+import * as jsonref from '../../dist/index.js';
 
 chai.use(spies);
 chai.use(chaiAsPromised);
@@ -381,7 +381,7 @@ describe('jsonref', function () {
     });
     it('should throw if path is not a string', function () {
       (function () {
-        jsonref.pointer({}, (1 as any) as string);
+        jsonref.pointer({}, 1 as any as string);
       }.should.throw(TypeError, /Bad path/));
     });
     it('should throw if path contains parts pointing to scalars', function () {

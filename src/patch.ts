@@ -1,5 +1,5 @@
-import * as meta from './meta';
-import * as pointer from './pointer';
+import * as meta from './meta.js';
+import * as pointer from './pointer.js';
 
 export interface JSONPatchOther {
   op: 'add' | 'replace' | 'test';
@@ -40,8 +40,8 @@ export function diff(src: any, dst: any, path: string = '/'): JSONPatch {
         out = out.concat(diff(src[i], dst[i], `${path === '/' ? '' : path}/${i}`));
       }
       if (src.length > dst.length) {
-        for(let i = src.length; i > dst.length; i--) {
-          out.push({ op: 'remove', path: `${path === '/' ? '' : path}/${i-1}` });
+        for (let i = src.length; i > dst.length; i--) {
+          out.push({ op: 'remove', path: `${path === '/' ? '' : path}/${i - 1}` });
         }
       } else if (src.length < dst.length) {
         for (let i = src.length; i < dst.length; i++) {

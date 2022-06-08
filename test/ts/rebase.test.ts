@@ -1,11 +1,11 @@
-import * as chai from 'chai';
-import { rebase, Rebaser, RebaserError } from '../../dist';
+import chai from 'chai';
+import { rebase, Rebaser, RebaserError } from '../../dist/index.js';
 
 const should = chai.should();
 
-describe('rebasing refs', function() {
-  describe('rebase ', function() {
-    it('should return an unchanged obj if rebaser function is not passed', function() {
+describe('rebasing refs', function () {
+  describe('rebase ', function () {
+    it('should return an unchanged obj if rebaser function is not passed', function () {
       const obj = {
         description: 'An object',
         type: 'object',
@@ -18,63 +18,63 @@ describe('rebasing refs', function() {
               id: { $ref: 'global#/definitions/nonEmptyString' },
               type: { $ref: 'global#/definitions/nonEmptyString' },
               labelId: { $ref: 'global#/definitions/nonEmptyString' },
-              format: { $ref: 'global#/definitions/nonEmptyString' }
-            }
+              format: { $ref: 'global#/definitions/nonEmptyString' },
+            },
           },
           defB: {
             type: 'object',
             allOf: [
               {
-                $ref: '#/definitions/defA'
-              }
+                $ref: '#/definitions/defA',
+              },
             ],
             oneOf: [
               {
                 type: 'object',
                 properties: {
                   format: {
-                    enum: ['break']
-                  }
-                }
+                    enum: ['break'],
+                  },
+                },
               },
               {
                 type: 'object',
                 required: ['id'],
                 properties: {
                   format: {
-                    enum: ['message']
+                    enum: ['message'],
                   },
-                  message: { $ref: 'global#/definitions/nonEmptyString' }
-                }
+                  message: { $ref: 'global#/definitions/nonEmptyString' },
+                },
               },
               {
                 type: 'object',
                 required: ['id'],
                 properties: {
                   format: {
-                    enum: ['message']
+                    enum: ['message'],
                   },
-                  message: { $ref: '#/definitions/defA' }
-                }
-              }
+                  message: { $ref: '#/definitions/defA' },
+                },
+              },
             ],
             properties: {
               type: {
-                enum: ['meta']
-              }
-            }
-          }
+                enum: ['meta'],
+              },
+            },
+          },
         },
         properties: {
           a: {
-            allOf: [{ $ref: 'global#/definitions/extDef' }, { $ref: '#/definitions/defB' }]
+            allOf: [{ $ref: 'global#/definitions/extDef' }, { $ref: '#/definitions/defB' }],
           },
           b: {
-            type: 'string'
+            type: 'string',
           },
           c: {
             enum: ['form', 'dialog', 'bot'],
-            default: 'form'
+            default: 'form',
           },
           d: {
             type: 'array',
@@ -85,16 +85,16 @@ describe('rebasing refs', function() {
                 { $ref: '#/definitions/defA' },
                 { $ref: '#/definitions/defA' },
                 { $ref: '#/definitions/defA' },
-                { $ref: '#/definitions/defA' }
-              ]
-            }
-          }
-        }
+                { $ref: '#/definitions/defA' },
+              ],
+            },
+          },
+        },
       };
       const rebased = rebase('my_object', obj);
       rebased.should.deep.equal(obj);
     });
-    it('should throw a RebaseError in case something goes wrong', function() {
+    it('should throw a RebaseError in case something goes wrong', function () {
       const obj = {
         description: 'An object',
         type: 'object',
@@ -107,63 +107,63 @@ describe('rebasing refs', function() {
               id: { $ref: 'global#/definitions/nonEmptyString' },
               type: { $ref: 'global#/definitions/nonEmptyString' },
               labelId: { $ref: 'global#/definitions/nonEmptyString' },
-              format: { $ref: 'global#/definitions/nonEmptyString' }
-            }
+              format: { $ref: 'global#/definitions/nonEmptyString' },
+            },
           },
           defB: {
             type: 'object',
             allOf: [
               {
-                $ref: '#/definitions/defA'
-              }
+                $ref: '#/definitions/defA',
+              },
             ],
             oneOf: [
               {
                 type: 'object',
                 properties: {
                   format: {
-                    enum: ['break']
-                  }
-                }
+                    enum: ['break'],
+                  },
+                },
               },
               {
                 type: 'object',
                 required: ['id'],
                 properties: {
                   format: {
-                    enum: ['message']
+                    enum: ['message'],
                   },
-                  message: { $ref: 'global#/definitions/nonEmptyString' }
-                }
+                  message: { $ref: 'global#/definitions/nonEmptyString' },
+                },
               },
               {
                 type: 'object',
                 required: ['id'],
                 properties: {
                   format: {
-                    enum: ['message']
+                    enum: ['message'],
                   },
-                  message: { $ref: '#/definitions/defA' }
-                }
-              }
+                  message: { $ref: '#/definitions/defA' },
+                },
+              },
             ],
             properties: {
               type: {
-                enum: ['meta']
-              }
-            }
-          }
+                enum: ['meta'],
+              },
+            },
+          },
         },
         properties: {
           a: {
-            allOf: [{ $ref: 'global#/definitions/extDef' }, { $ref: '#/definitions/defB' }]
+            allOf: [{ $ref: 'global#/definitions/extDef' }, { $ref: '#/definitions/defB' }],
           },
           b: {
-            type: 'string'
+            type: 'string',
           },
           c: {
             enum: ['form', 'dialog', 'bot'],
-            default: 'form'
+            default: 'form',
           },
           d: {
             type: 'array',
@@ -174,18 +174,18 @@ describe('rebasing refs', function() {
                 { $ref: '#/definitions/defA' },
                 { $ref: '#/definitions/defA' },
                 { $ref: '#/definitions/defA' },
-                { $ref: '#/definitions/defA' }
-              ]
-            }
-          }
-        }
+                { $ref: '#/definitions/defA' },
+              ],
+            },
+          },
+        },
       };
       const rebaser: Rebaser = (id: string, obj: any) => {
         throw new Error('test error');
       };
       should.throw(() => rebase('my_object', obj, rebaser), RebaserError);
     });
-    it('should return an obj with all $refs set to id#/b/c using a proper rebaser function', function() {
+    it('should return an obj with all $refs set to id#/b/c using a proper rebaser function', function () {
       const obj = {
         description: 'An object',
         type: 'object',
@@ -198,63 +198,63 @@ describe('rebasing refs', function() {
               id: { $ref: 'global#/definitions/nonEmptyString' },
               type: { $ref: 'global#/definitions/nonEmptyString' },
               labelId: { $ref: 'global#/definitions/nonEmptyString' },
-              format: { $ref: 'global#/definitions/nonEmptyString' }
-            }
+              format: { $ref: 'global#/definitions/nonEmptyString' },
+            },
           },
           defB: {
             type: 'object',
             allOf: [
               {
-                $ref: '#/definitions/defA'
-              }
+                $ref: '#/definitions/defA',
+              },
             ],
             oneOf: [
               {
                 type: 'object',
                 properties: {
                   format: {
-                    enum: ['break']
-                  }
-                }
+                    enum: ['break'],
+                  },
+                },
               },
               {
                 type: 'object',
                 required: ['id'],
                 properties: {
                   format: {
-                    enum: ['message']
+                    enum: ['message'],
                   },
-                  message: { $ref: 'global#/definitions/nonEmptyString' }
-                }
+                  message: { $ref: 'global#/definitions/nonEmptyString' },
+                },
               },
               {
                 type: 'object',
                 required: ['id'],
                 properties: {
                   format: {
-                    enum: ['message']
+                    enum: ['message'],
                   },
-                  message: { $ref: '#/definitions/defA' }
-                }
-              }
+                  message: { $ref: '#/definitions/defA' },
+                },
+              },
             ],
             properties: {
               type: {
-                enum: ['meta']
-              }
-            }
-          }
+                enum: ['meta'],
+              },
+            },
+          },
         },
         properties: {
           a: {
-            allOf: [{ $ref: 'global#/definitions/extDef' }, { $ref: '#/definitions/defB' }]
+            allOf: [{ $ref: 'global#/definitions/extDef' }, { $ref: '#/definitions/defB' }],
           },
           b: {
-            type: 'string'
+            type: 'string',
           },
           c: {
             enum: ['form', 'dialog', 'bot'],
-            default: 'form'
+            default: 'form',
           },
           d: {
             type: 'array',
@@ -265,11 +265,11 @@ describe('rebasing refs', function() {
                 { $ref: '#/definitions/defA' },
                 { $ref: '#/definitions/defA' },
                 { $ref: '#/definitions/defA' },
-                { $ref: '#/definitions/defA' }
-              ]
-            }
-          }
-        }
+                { $ref: '#/definitions/defA' },
+              ],
+            },
+          },
+        },
       };
       const rebaser: Rebaser = (id: string, obj: any) => {
         obj.$ref = `${id}#/b/c`;
@@ -292,7 +292,7 @@ describe('rebasing refs', function() {
         s.$ref.should.equal('my_object#/b/c');
       }
     });
-    it('should return an obj with all $refs set to id#/b/c using a proper rebaser function in case of a JSON without arrays', function() {
+    it('should return an obj with all $refs set to id#/b/c using a proper rebaser function in case of a JSON without arrays', function () {
       const obj = {
         description: 'An object',
         type: 'object',
@@ -303,10 +303,10 @@ describe('rebasing refs', function() {
               id: { $ref: 'global#/definitions/nonEmptyString' },
               type: { $ref: 'global#/definitions/nonEmptyString' },
               labelId: { $ref: 'global#/definitions/nonEmptyString' },
-              format: { $ref: 'global#/definitions/nonEmptyString' }
-            }
-          }
-        }
+              format: { $ref: 'global#/definitions/nonEmptyString' },
+            },
+          },
+        },
       };
       const rebaser: Rebaser = (id: string, obj: any) => {
         obj.$ref = `${id}#/b/c`;
@@ -320,7 +320,7 @@ describe('rebasing refs', function() {
       rebased.definitions.defA.properties.labelId.$ref.should.equal('my_object#/b/c');
       rebased.definitions.defA.properties.format.$ref.should.equal('my_object#/b/c');
     });
-    it('should return an obj with all $refs set to id#/b/c using a proper rebaser function in case cyclic links', function() {
+    it('should return an obj with all $refs set to id#/b/c using a proper rebaser function in case cyclic links', function () {
       const obj = {
         description: 'An object',
         type: 'object',
@@ -332,10 +332,10 @@ describe('rebasing refs', function() {
               type: { $ref: 'global#/definitions/nonEmptyString' },
               labelId: { $ref: 'global#/definitions/nonEmptyString' },
               format: { $ref: 'global#/definitions/nonEmptyString' },
-              self: this
-            }
-          }
-        }
+              self: this,
+            },
+          },
+        },
       };
       const rebaser: Rebaser = (id: string, obj: any) => {
         obj.$ref = `${id}#/b/c`;
@@ -347,7 +347,7 @@ describe('rebasing refs', function() {
       rebased.definitions.defA.properties.labelId.$ref.should.equal('my_object#/b/c');
       rebased.definitions.defA.properties.format.$ref.should.equal('my_object#/b/c');
     });
-    it('should return an obj with all $refs correctly set using a proper rebaser function', function() {
+    it('should return an obj with all $refs correctly set using a proper rebaser function', function () {
       const obj = {
         description: 'An object',
         type: 'object',
@@ -360,63 +360,63 @@ describe('rebasing refs', function() {
               id: { $ref: 'global#/definitions/nonEmptyString' },
               type: { $ref: 'global#/definitions/nonEmptyString' },
               labelId: { $ref: 'global#/definitions/nonEmptyString' },
-              format: { $ref: 'global#/definitions/nonEmptyString' }
-            }
+              format: { $ref: 'global#/definitions/nonEmptyString' },
+            },
           },
           defB: {
             type: 'object',
             allOf: [
               {
-                $ref: '#/definitions/defA'
-              }
+                $ref: '#/definitions/defA',
+              },
             ],
             oneOf: [
               {
                 type: 'object',
                 properties: {
                   format: {
-                    enum: ['break']
-                  }
-                }
+                    enum: ['break'],
+                  },
+                },
               },
               {
                 type: 'object',
                 required: ['id'],
                 properties: {
                   format: {
-                    enum: ['message']
+                    enum: ['message'],
                   },
-                  message: { $ref: 'global#/definitions/nonEmptyString' }
-                }
+                  message: { $ref: 'global#/definitions/nonEmptyString' },
+                },
               },
               {
                 type: 'object',
                 required: ['id'],
                 properties: {
                   format: {
-                    enum: ['message']
+                    enum: ['message'],
                   },
-                  message: { $ref: '#/definitions/defA' }
-                }
-              }
+                  message: { $ref: '#/definitions/defA' },
+                },
+              },
             ],
             properties: {
               type: {
-                enum: ['meta']
-              }
-            }
-          }
+                enum: ['meta'],
+              },
+            },
+          },
         },
         properties: {
           a: {
-            allOf: [{ $ref: 'global#/definitions/extDef' }, { $ref: '#/definitions/defB' }]
+            allOf: [{ $ref: 'global#/definitions/extDef' }, { $ref: '#/definitions/defB' }],
           },
           b: {
-            type: 'string'
+            type: 'string',
           },
           c: {
             enum: ['form', 'dialog', 'bot'],
-            default: 'form'
+            default: 'form',
           },
           d: {
             type: 'array',
@@ -427,11 +427,11 @@ describe('rebasing refs', function() {
                 { $ref: '#/definitions/defA' },
                 { $ref: '#/definitions/defA' },
                 { $ref: '#/definitions/defA' },
-                { $ref: '#/definitions/defA' }
-              ]
-            }
-          }
-        }
+                { $ref: '#/definitions/defA' },
+              ],
+            },
+          },
+        },
       };
       const rebaser: Rebaser = (schemaName: string, obj: any) => {
         const otherRef = new RegExp('^(.+)#/definitions/(.+)', 'g');
@@ -465,7 +465,7 @@ describe('rebasing refs', function() {
         s.$ref.should.equal('#/components/schemas/my_schema/definitions/defA');
       }
     });
-    it('should return an obj with all $refs correctly set using a proper complex rebaser function', function() {
+    it('should return an obj with all $refs correctly set using a proper complex rebaser function', function () {
       const obj = {
         description: 'An object',
         type: 'object',
@@ -478,63 +478,63 @@ describe('rebasing refs', function() {
               id: { $ref: 'global#/definitions/nonEmptyString' },
               type: { $ref: 'global#/properties/a' },
               labelId: { $ref: 'global#' },
-              format: { $ref: 'another' }
-            }
+              format: { $ref: 'another' },
+            },
           },
           defB: {
             type: 'object',
             allOf: [
               {
-                $ref: '#/properties/c'
-              }
+                $ref: '#/properties/c',
+              },
             ],
             oneOf: [
               {
                 type: 'object',
                 properties: {
                   format: {
-                    enum: ['break']
-                  }
-                }
+                    enum: ['break'],
+                  },
+                },
               },
               {
                 type: 'object',
                 required: ['id'],
                 properties: {
                   format: {
-                    enum: ['message']
+                    enum: ['message'],
                   },
-                  message: { $ref: 'global#/definitions/nonEmptyString' }
-                }
+                  message: { $ref: 'global#/definitions/nonEmptyString' },
+                },
               },
               {
                 type: 'object',
                 required: ['id'],
                 properties: {
                   format: {
-                    enum: ['message']
+                    enum: ['message'],
                   },
-                  message: { $ref: '#/definitions/defA' }
-                }
-              }
+                  message: { $ref: '#/definitions/defA' },
+                },
+              },
             ],
             properties: {
               type: {
-                enum: ['meta']
-              }
-            }
-          }
+                enum: ['meta'],
+              },
+            },
+          },
         },
         properties: {
           a: {
-            allOf: [{ $ref: 'global#/definitions/extDef' }, { $ref: '#/definitions/defB' }]
+            allOf: [{ $ref: 'global#/definitions/extDef' }, { $ref: '#/definitions/defB' }],
           },
           b: {
-            type: 'string'
+            type: 'string',
           },
           c: {
             enum: ['form', 'dialog', 'bot'],
-            default: 'form'
+            default: 'form',
           },
           d: {
             type: 'array',
@@ -545,11 +545,11 @@ describe('rebasing refs', function() {
                 { $ref: '#/definitions/defA' },
                 { $ref: '#/definitions/defA' },
                 { $ref: '#/definitions/defA' },
-                { $ref: '#/definitions/defA' }
-              ]
-            }
-          }
-        }
+                { $ref: '#/definitions/defA' },
+              ],
+            },
+          },
+        },
       };
       const rebaser: Rebaser = (schemaName: string, obj: any) => {
         const otherRef = new RegExp('^(.+)#/definitions/(.+)', 'g');

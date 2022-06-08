@@ -1,12 +1,12 @@
-import { ParserError, RetrieverError } from './errors';
-import * as meta from './meta';
-import { resolve as refResolver } from './ref';
+import { ParserError, RetrieverError } from './errors.js';
+import * as meta from './meta.js';
+import { resolve as refResolver } from './ref.js';
 
-export * from './errors';
-export { getMeta, isAnnotated, isRef, Meta, normalize, normalizeUri, Registry } from './meta';
-export * from './patch';
-export { resolve as pointer } from './pointer';
-export * from './rebase';
+export * from './errors.js';
+export { getMeta, isAnnotated, isRef, Meta, normalize, normalizeUri, Registry } from './meta.js';
+export * from './patch.js';
+export { resolve as pointer } from './pointer.js';
+export * from './rebase.js';
 
 export type Retriever = (url: string) => Promise<any>;
 

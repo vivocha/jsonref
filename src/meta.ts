@@ -1,4 +1,4 @@
-import { escape } from './utils';
+import { escape } from './utils.js';
 
 export interface Registry {
   [uri: string]: any;
@@ -55,7 +55,7 @@ export function getKey(obj: any): string | number | undefined {
     }
     return undefined;
   } else {
-    return Object.keys(parent).find(k => parent[k] === obj);
+    return Object.keys(parent).find((k) => parent[k] === obj);
   }
 }
 export function getById(obj: any, id: string): any {
@@ -74,7 +74,7 @@ export function annotate(obj: any, options: Options): any {
   obj[__meta] = {
     registry: options.registry || {},
     refs: options.refs || new Set(),
-    root: obj
+    root: obj,
   } as Registry;
   obj[__meta].registry[normalizeUri(options.scope)] = obj;
   return (function _annotate(obj: any, scope: string): any {
@@ -107,7 +107,7 @@ export function annotate(obj: any, options: Options): any {
             registry: meta.registry,
             refs: meta.refs,
             parent: obj,
-            root: meta.root
+            root: meta.root,
           };
           _annotate(next, `${meta.scope}/${escape(key)}`);
         }
@@ -119,7 +119,7 @@ export function annotate(obj: any, options: Options): any {
 export function missingRefs(obj: any): string[] {
   const meta = getMeta(obj);
   const known = new Set(Object.keys(meta.registry));
-  return [...meta.refs].filter(r => !known.has(r));
+  return [...meta.refs].filter((r) => !known.has(r));
 }
 export function normalize(obj: any): any {
   if (!isAnnotated(obj)) {

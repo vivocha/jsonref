@@ -1,4 +1,4 @@
-import { RebaserError } from './errors';
+import { RebaserError } from './errors.js';
 
 export interface Rebaser {
   (id: string, obj: any): any;
@@ -28,7 +28,7 @@ export function rebase(id: string, obj: any, rebaser?: Rebaser): any {
         const prop = obj[key];
         if (prop && typeof prop === 'object') {
           if (!Array.isArray(prop)) {
-            if (!parsedProps.find(p => p === prop)) {
+            if (!parsedProps.find((p) => p === prop)) {
               parsedProps.push(prop);
               findAndRebase(prop);
             }

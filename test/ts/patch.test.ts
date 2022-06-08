@@ -1,6 +1,6 @@
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import { diff, patch } from '../../dist/patch';
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import { diff, patch } from '../../dist/patch.js';
 
 chai.use(chaiAsPromised);
 const should = chai.should();
@@ -25,7 +25,7 @@ describe('diff', function () {
     diff([1, 2, 3], [1, 2]).should.deep.equal([{ op: 'remove', path: '/2' }]);
     diff([1, 2, 3], [1, 3]).should.deep.equal([
       { op: 'replace', path: '/1', value: 3 },
-      { op: 'remove', path: '/2' }
+      { op: 'remove', path: '/2' },
     ]);
     diff([1, 2], [1, 2, 3]).should.deep.equal([{ op: 'add', path: '/-', value: 3 }]);
     diff({ a: [1, 2, 3] }, { a: [1, 2] }).should.deep.equal([{ op: 'remove', path: '/a/2' }]);
@@ -37,7 +37,7 @@ describe('diff', function () {
     diff({ a: 1 }, { a: 1, b: 2 }).should.deep.equal([{ op: 'add', path: '/b', value: 2 }]);
     diff({ a: 1 }, { b: 2 }).should.deep.equal([
       { op: 'remove', path: '/a' },
-      { op: 'add', path: '/b', value: 2 }
+      { op: 'add', path: '/b', value: 2 },
     ]);
     diff({ a: { b: { c: 1 } } }, { a: { b: { c: 2 } } }).should.deep.equal([{ op: 'replace', path: '/a/b/c', value: 2 }]);
   });
@@ -169,16 +169,16 @@ describe('patch', function () {
         nodes: ['aaa', 'bbb', 'ccc'],
         actions: {
           old: [{ id: 1 }, { id: 2 }],
-          new: [{ id: 99 }, { id: 156 }, { id: 9000 }, { id: 1000 }]
-        }
+          new: [{ id: 99 }, { id: 156 }, { id: 9000 }, { id: 1000 }],
+        },
       };
       const c2 = {
         nodes: [],
         actions: {
           old: [{ id: 2 }],
           new: [{ id: 99 }, { id: 9000 }],
-          useless: [1, 2, 3, 4]
-        }
+          useless: [1, 2, 3, 4],
+        },
       };
       const d = diff(c, c2);
       patch(c, d).should.deep.equal({
@@ -186,8 +186,8 @@ describe('patch', function () {
         actions: {
           old: [{ id: 2 }],
           new: [{ id: 99 }, { id: 9000 }],
-          useless: [1, 2, 3, 4]
-        }
+          useless: [1, 2, 3, 4],
+        },
       });
     });
     it('should remove array items from matrix', function () {
@@ -195,16 +195,16 @@ describe('patch', function () {
         [1, 2, 3],
         [3, 2, 1],
         ['ciao', 'bye', 'hello'],
-        [{ k: 1 }, { k: 2 }, { k: 3 }]
+        [{ k: 1 }, { k: 2 }, { k: 3 }],
       ];
       const m1 = [
         [2, 3],
-        [{ k: 1 }, { k: 3 }]
+        [{ k: 1 }, { k: 3 }],
       ];
       const d = diff(m, m1);
       patch(m, d).should.deep.equal([
         [2, 3],
-        [{ k: 1 }, { k: 3 }]
+        [{ k: 1 }, { k: 3 }],
       ]);
     });
     it('should remove array items', function () {
