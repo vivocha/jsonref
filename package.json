@@ -23,7 +23,6 @@
     "cover": "c8 --require esm --reporter=lcov --reporter=text npm t",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "prebuild": "rimraf dist",
-    "commit": "git-cz",
     "check-coverage": "c8 check-coverage --statements 100 --branches 100 --functions 100 --lines 100",
     "watch:test": "npm t -- -w",
     "test": "find ./test/ts -type f -name '*.js' -delete && npm run build && tsc -p test && mocha --exit --no-timeouts --recursive --reporter mochawesome --reporter-options reportDir=test-results test/**/*.test.js",
@@ -60,11 +59,7 @@
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
     "chai-spies": "^1.0.0",
-    "commitizen": "^4.2.4",
-    "commitlint": "^17.0.2",
     "coveralls": "^3.1.1",
-    "cz-conventional-changelog": "^3.3.0",
-    "husky": "^8.0.1",
     "mocha": "^10.0.0",
     "mochawesome": "^7.1.3",
     "rimraf": "^3.0.2",
@@ -73,17 +68,6 @@
   },
   "engines": {
     "node": ">=16.14.0"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "npm run build && npm run cover && npm run check-coverage"
-    }
   },
   "c8": {
     "include": [
