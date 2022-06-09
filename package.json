@@ -3,8 +3,7 @@
   "version": "0.0.0-development",
   "description": "Javascript References ($ref) and Pointers library",
   "type": "module",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "exports": "./dist/index.js",
   "directories": {
     "test": "test"
   },
