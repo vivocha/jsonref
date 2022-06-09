@@ -5,8 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
-    "./dist/*.js": "./dist/*.js",
-    "./*.js": "./dist/*.js"
+    "./dist/*.js": "./dist/*.js"
   },
   "types": "./dist/index.d.ts",
   "directories": {
