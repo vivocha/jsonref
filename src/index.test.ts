@@ -1,9 +1,9 @@
-import chai from 'chai';
+import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import spies from 'chai-spies';
-import * as jsonref from '../../dist/index.js';
+import * as jsonref from './index.js';
 
-chai.use(spies);
+const { spy } = chai.use(spies);
 chai.use(chaiAsPromised);
 const should = chai.should();
 
@@ -58,7 +58,8 @@ describe('jsonref', function () {
           { scope: 'http://example.com' }
         )
         .then(function (data) {
-          data.should.deep.equal({
+          debugger;
+          JSON.parse(JSON.stringify(data)).should.deep.equal({
             a: 10,
             b: {
               c: 5,
@@ -67,7 +68,7 @@ describe('jsonref', function () {
         });
     });
     it('should be able to parse a root level $ref', function () {
-      let retriever = chai.spy(function () {
+      let retriever = spy(function () {
         return Promise.resolve({
           a: 100,
         });
@@ -106,7 +107,6 @@ describe('jsonref', function () {
         data,
         ref: { $ref: '#/data/a' },
       };
-      debugger;
       await jsonref.parse(data, opts);
       await jsonref.parse(outerData, opts).should.eventually.equal(outerData);
       return jsonref.parse(outerData, opts).should.eventually.equal(outerData);
@@ -127,7 +127,7 @@ describe('jsonref', function () {
         .equal(10);
     });
     it('should call the retriever if the requested scope does not match the specified one', function () {
-      let retriever = chai.spy(function () {
+      let retriever = spy(function () {
         return Promise.resolve({
           a: 100,
         });
@@ -153,7 +153,7 @@ describe('jsonref', function () {
         .equal(100);
     });
     it('should call the retriever if data is a string', function () {
-      let retriever = chai.spy(function () {
+      let retriever = spy(function () {
         return Promise.resolve({
           a: 200,
         });
@@ -169,7 +169,7 @@ describe('jsonref', function () {
         .equal(200);
     });
     it("should store the retrieve data in the registry, if url and scope don't match", async function () {
-      let retriever = chai.spy(function () {
+      let retriever = spy(function () {
         return Promise.resolve({
           a: 200,
         });

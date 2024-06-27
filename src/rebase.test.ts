@@ -1,5 +1,5 @@
-import chai from 'chai';
-import { rebase, Rebaser, RebaserError } from '../../dist/index.js';
+import * as chai from 'chai';
+import { rebase, Rebaser, RebaserError } from './index.js';
 
 const should = chai.should();
 

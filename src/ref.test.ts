@@ -1,6 +1,6 @@
-import chai from 'chai';
+import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import * as ref from '../../dist/ref.js';
+import * as ref from './ref.js';
 
 chai.use(chaiAsPromised);
 const should = chai.should();

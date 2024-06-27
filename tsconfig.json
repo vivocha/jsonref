@@ -1,18 +1,17 @@
 {
-    "compilerOptions": {
-      "incremental": true,
-      "module": "es2020",
-      "target": "es2020",
-      "noImplicitAny": false,
-      "sourceMap": true,
-      "declaration": true,
-      "outDir": "dist",
-      "strictNullChecks": true,
-      "allowJs": false,
-      "experimentalDecorators": true,
-      "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true
-    },
-    "include": ["src/**/*.ts"]
-  }
-  
+  "compilerOptions": {
+    "incremental": true,
+    "module": "NodeNext",
+    "target": "ES2022",
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "declaration": true,
+    "outDir": "dist",
+    "strictNullChecks": true,
+    "allowJs": false,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["src/**/*.ts"]
+}
