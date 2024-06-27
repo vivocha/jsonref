@@ -1,6 +1,6 @@
 {
   "name": "jsonref",
-  "version": "8.0.8",
+  "version": "9.0.0",
   "description": "Javascript References ($ref) and Pointers library",
   "type": "module",
   "exports": {
