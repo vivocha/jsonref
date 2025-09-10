@@ -1,9 +1,8 @@
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import spies from 'chai-spies';
+import * as sinon from 'sinon';
 import * as jsonref from './index.js';
 
-const { spy } = chai.use(spies);
 chai.use(chaiAsPromised);
 const should = chai.should();
 
@@ -68,7 +67,7 @@ describe('jsonref', function () {
         });
     });
     it('should be able to parse a root level $ref', function () {
-      let retriever = spy(function () {
+      let retriever = sinon.spy(function () {
         return Promise.resolve({
           a: 100,
         });
@@ -127,7 +126,7 @@ describe('jsonref', function () {
         .equal(10);
     });
     it('should call the retriever if the requested scope does not match the specified one', function () {
-      let retriever = spy(function () {
+      let retriever = sinon.spy(function () {
         return Promise.resolve({
           a: 100,
         });
@@ -153,7 +152,7 @@ describe('jsonref', function () {
         .equal(100);
     });
     it('should call the retriever if data is a string', function () {
-      let retriever = spy(function () {
+      let retriever = sinon.spy(function () {
         return Promise.resolve({
           a: 200,
         });
@@ -169,7 +168,7 @@ describe('jsonref', function () {
         .equal(200);
     });
     it("should store the retrieve data in the registry, if url and scope don't match", async function () {
-      let retriever = spy(function () {
+      let retriever = sinon.spy(function () {
         return Promise.resolve({
           a: 200,
         });
